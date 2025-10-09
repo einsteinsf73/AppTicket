@@ -1,0 +1,30 @@
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Visual Studio cache files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
+x64/
+x86/
+build/
+Build/
+build-desktop/
+
+# App settings
+appsettings.json
+appsettings.*.json
+!appsettings.template.json
+
+# Other
+instrucoes_banco_de_dados.txt
+*.lnk

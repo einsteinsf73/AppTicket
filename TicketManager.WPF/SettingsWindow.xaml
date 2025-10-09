@@ -1,0 +1,33 @@
+<Window x:Class="TicketManager.WPF.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Configurações - Gerenciar Usuários" Height="450" Width="400"
+        WindowStartupLocation="CenterOwner">
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Label Grid.Row="0" Content="Usuários Autorizados" FontWeight="Bold"/>
+
+        <DataGrid Grid.Row="1" x:Name="UsersGrid" AutoGenerateColumns="False" CanUserAddRows="False" Margin="0,5">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Nome de Usuário (Windows)" Binding="{Binding WindowsUserName}" Width="*" IsReadOnly="True"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <StackPanel Grid.Row="2" Orientation="Vertical">
+            <Label Content="Adicionar Novo Usuário:"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBox x:Name="NewUserTextBox" Width="200" VerticalContentAlignment="Center"/>
+                <Button x:Name="AddUserButton" Content="Adicionar" Margin="10,0,0,0" Padding="10,5" Click="AddUserButton_Click"/>
+            </StackPanel>
+            <Button x:Name="RemoveUserButton" Content="Remover Usuário Selecionado" Margin="0,15,0,0" Padding="10,5" Click="RemoveUserButton_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -16,5 +16,12 @@ namespace TicketManager.WPF.Models
         public string WindowsUserName { get; set; } = string.Empty;
 
         public int IsAdmin { get; set; }
+
+        [NotMapped]
+        public bool IsAdminBool
+        {
+            get { return IsAdmin == 1; }
+            set { IsAdmin = value ? 1 : 0; }
+        }
     }
 }

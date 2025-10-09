@@ -37,11 +37,12 @@ namespace TicketManager.WPF
                 return;
             }
 
-            var newUser = new AuthorizedUser { WindowsUserName = newUserName };
+            var newUser = new AuthorizedUser { WindowsUserName = newUserName, IsAdminBool = IsAdminCheckBox.IsChecked == true };
             _context.AuthorizedUsers.Add(newUser);
             _context.SaveChanges();
 
             NewUserTextBox.Clear();
+            IsAdminCheckBox.IsChecked = false; // Reseta a checkbox
             LoadAuthorizedUsers(); // Recarrega a grade
         }
 
@@ -68,6 +69,12 @@ namespace TicketManager.WPF
             {
                 MessageBox.Show("Por favor, selecione um usuário para remover.", "Nenhum Usuário Selecionado", MessageBoxButton.OK, MessageBoxImage.Information);
             }
+        }
+
+        private void UsersGrid_CellEditEnding(object sender, System.Windows.Controls.DataGridCellEditEndingEventArgs e)
+        {
+            // Salva as alterações no banco de dados sempre que uma célula é editada
+            _context.SaveChanges();
         }
     }
 }

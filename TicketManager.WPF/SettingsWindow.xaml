@@ -15,16 +15,18 @@
 
         <Label Grid.Row="0" Content="Usuários Autorizados" FontWeight="Bold"/>
 
-        <DataGrid Grid.Row="1" x:Name="UsersGrid" AutoGenerateColumns="False" CanUserAddRows="False" Margin="0,5">
+        <DataGrid Grid.Row="1" x:Name="UsersGrid" AutoGenerateColumns="False" CanUserAddRows="False" Margin="0,5" CellEditEnding="UsersGrid_CellEditEnding">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Nome de Usuário (Windows)" Binding="{Binding WindowsUserName}" Width="*" IsReadOnly="True"/>
+                <DataGridCheckBoxColumn Header="Admin" Binding="{Binding IsAdminBool}" Width="Auto"/>
             </DataGrid.Columns>
         </DataGrid>
 
         <StackPanel Grid.Row="2" Orientation="Vertical">
             <Label Content="Adicionar Novo Usuário:"/>
             <StackPanel Orientation="Horizontal">
-                <TextBox x:Name="NewUserTextBox" Width="200" VerticalContentAlignment="Center"/>
+                <TextBox x:Name="NewUserTextBox" Width="180" VerticalContentAlignment="Center"/>
+                <CheckBox x:Name="IsAdminCheckBox" Content="Administrador" VerticalAlignment="Center" Margin="10,0,0,0"/>
                 <Button x:Name="AddUserButton" Content="Adicionar" Margin="10,0,0,0" Padding="10,5" Click="AddUserButton_Click"/>
             </StackPanel>
             <Button x:Name="RemoveUserButton" Content="Remover Usuário Selecionado" Margin="0,15,0,0" Padding="10,5" Click="RemoveUserButton_Click"/>

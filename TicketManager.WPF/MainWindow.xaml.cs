@@ -8,10 +8,11 @@ using TicketManager.WPF.Data;
 using TicketManager.WPF.Models;
 using System.Windows.Input;
 using System.Net;
+using ControlzEx.Theming;
 
 namespace TicketManager.WPF;
 
-public partial class MainWindow : Window
+public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
 {
     private readonly TicketContext _context = new TicketContext();
     private readonly bool _isAdmin;
@@ -19,7 +20,7 @@ public partial class MainWindow : Window
     public MainWindow(AuthorizedUser user)
     {
         InitializeComponent();
-        _isAdmin = user.IsAdmin == 1;
+        _isAdmin = user.IsAdminBool;
 
         CurrentUserTextBlock.Text = $"Usuário: {user.WindowsUserName}";
         InitializeFilters();
@@ -298,5 +299,20 @@ public partial class MainWindow : Window
     private void SetButtonVisibility()
     {
         SettingsButton.Visibility = _isAdmin ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    private void ThemeToggleButton_Click(object sender, RoutedEventArgs e)
+    {
+        var currentApp = Application.Current;
+        var currentTheme = ThemeManager.Current.DetectTheme(currentApp);
+
+        if (currentTheme != null && currentTheme.BaseColorScheme == "Dark")
+        {
+            ThemeManager.Current.ChangeTheme(currentApp, "Light.Blue");
+        }
+        else
+        {
+            ThemeManager.Current.ChangeTheme(currentApp, "Dark.Blue");
+        }
     }
 }

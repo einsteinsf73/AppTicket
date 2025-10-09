@@ -20,7 +20,7 @@ namespace TicketManager.WPF
                     // Isso só acontece na primeira execução para popular o banco de dados.
                     if (context.AuthorizedUsers.Count() == 0)
                     {
-                        var firstUser = new Models.AuthorizedUser { WindowsUserName = Environment.UserName, IsAdmin = 1 };
+                        var firstUser = new Models.AuthorizedUser { WindowsUserName = Environment.UserName, IsAdminBool = true };
                         context.AuthorizedUsers.Add(firstUser);
                         context.SaveChanges();
                     }
@@ -51,8 +51,8 @@ namespace TicketManager.WPF
 
         private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            var errorMessage = e.Exception.InnerException?.Message ?? e.Exception.Message;
-            MessageBox.Show("Ocorreu um erro crítico e a aplicação será encerrada.\n\nDetalhes: " + errorMessage, 
+            // Mostra a exceção completa para um diagnóstico detalhado
+            MessageBox.Show("Ocorreu um erro crítico e a aplicação será encerrada.\n\nDetalhes: " + e.Exception.ToString(), 
                             "Erro Inesperado", MessageBoxButton.OK, MessageBoxImage.Error);
             
             e.Handled = true;

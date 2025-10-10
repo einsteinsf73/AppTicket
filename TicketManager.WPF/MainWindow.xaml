@@ -10,6 +10,7 @@
     <DockPanel Margin="10">
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
             <Button x:Name="NewTicketButton" Content="Novo Ticket" Margin="0,0,5,0" Padding="10,5" Click="NewTicketButton_Click"/>
+            <Button x:Name="ViewTicketButton" Content="Visualizar" Margin="0,0,5,0" Padding="10,5" Click="ViewTicketButton_Click" IsEnabled="False"/>
             <Button x:Name="EditTicketButton" Content="Editar Ticket" Margin="0,0,5,0" Padding="10,5" Click="EditTicketButton_Click" IsEnabled="False"/>
             <Button x:Name="ReopenTicketButton" Content="Reabrir Ticket" Margin="0,0,5,0" Padding="10,5" Click="ReopenTicketButton_Click" IsEnabled="False"/>
             <Button x:Name="DeleteTicketButton" Content="Excluir Ticket" Padding="10,5" Click="DeleteTicketButton_Click"/>
@@ -57,6 +58,7 @@
                                 <Condition Binding="{Binding Priority}" Value="Media"/>
                             </MultiDataTrigger.Conditions>
                             <Setter Property="Background" Value="LightYellow"/>
+                            <Setter Property="Foreground" Value="DarkOliveGreen"/>
                         </MultiDataTrigger>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
@@ -80,6 +82,7 @@
                                 <Condition Binding="{Binding Priority}" Value="Media"/>
                             </MultiDataTrigger.Conditions>
                             <Setter Property="Background" Value="LightYellow"/>
+                            <Setter Property="Foreground" Value="DarkOliveGreen"/>
                         </MultiDataTrigger>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
@@ -89,10 +92,19 @@
                             <Setter Property="Background" Value="LightGreen"/>
                         </MultiDataTrigger>
 
-                        <!-- Tickets Fechados -->
+                        <!-- Tickets Fechados e Resolvidos -->
                         <DataTrigger Binding="{Binding Status}" Value="Fechado">
                             <Setter Property="Background" Value="LightBlue"/>
                         </DataTrigger>
+                        <DataTrigger Binding="{Binding Status}" Value="Resolvido">
+                            <Setter Property="Background" Value="LightBlue"/>
+                        </DataTrigger>
+
+                        <!-- Estilo de Seleção -->
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="LightGray"/>
+                            <Setter Property="Foreground" Value="Black"/>
+                        </Trigger>
                     </Style.Triggers>
                 </Style>
             </DataGrid.RowStyle>

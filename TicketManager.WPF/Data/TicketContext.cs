@@ -10,6 +10,7 @@ namespace TicketManager.WPF.Data
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<TicketLog> TicketLogs { get; set; }
         public DbSet<AuthorizedUser> AuthorizedUsers { get; set; }
+        public DbSet<ReopeningLog> ReopeningLogs { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -30,6 +31,7 @@ namespace TicketManager.WPF.Data
             modelBuilder.Entity<Ticket>().ToTable("TICKETS");
             modelBuilder.Entity<TicketLog>().ToTable("TICKET_LOGS");
             modelBuilder.Entity<AuthorizedUser>().ToTable("AUTHORIZED_USERS");
+            modelBuilder.Entity<ReopeningLog>().ToTable("REOPENING_LOGS");
         }
     }
 }

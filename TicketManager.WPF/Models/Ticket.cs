@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System;
+using System.Collections.Generic;
 
 namespace TicketManager.WPF.Models
 {
@@ -9,6 +10,7 @@ namespace TicketManager.WPF.Models
     {
         Aberto,
         EmAndamento,
+        Resolvido,
         Fechado
     }
 
@@ -36,5 +38,6 @@ namespace TicketManager.WPF.Models
         [MaxLength(256)]
         public string CreatedByHostname { get; set; } = string.Empty;
         public int SlaMinutes { get; set; }
+        public virtual ICollection<ReopeningLog> ReopeningLogs { get; set; } = new List<ReopeningLog>();
     }
 }

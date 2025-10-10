@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
 using TicketManager.WPF.Data;
@@ -11,9 +12,11 @@ using TicketManager.WPF.Data;
 namespace TicketManager.WPF.Migrations
 {
     [DbContext(typeof(TicketContext))]
-    partial class TicketContextModelSnapshot : ModelSnapshot
+    [Migration("20251010124149_AddResolvedStatus")]
+    partial class AddResolvedStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,35 +44,6 @@ namespace TicketManager.WPF.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("AUTHORIZED_USERS", (string)null);
-                });
-
-            modelBuilder.Entity("TicketManager.WPF.Models.ReopeningLog", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
-
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)");
-
-                    b.Property<DateTime>("ReopenedAt")
-                        .HasColumnType("TIMESTAMP(7)");
-
-                    b.Property<string>("ReopenedBy")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)");
-
-                    b.Property<int>("TicketId")
-                        .HasColumnType("NUMBER(10)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TicketId");
-
-                    b.ToTable("REOPENING_LOGS", (string)null);
                 });
 
             modelBuilder.Entity("TicketManager.WPF.Models.Ticket", b =>
@@ -166,22 +140,6 @@ namespace TicketManager.WPF.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TICKET_LOGS", (string)null);
-                });
-
-            modelBuilder.Entity("TicketManager.WPF.Models.ReopeningLog", b =>
-                {
-                    b.HasOne("TicketManager.WPF.Models.Ticket", "Ticket")
-                        .WithMany("ReopeningLogs")
-                        .HasForeignKey("TicketId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Ticket");
-                });
-
-            modelBuilder.Entity("TicketManager.WPF.Models.Ticket", b =>
-                {
-                    b.Navigation("ReopeningLogs");
                 });
 #pragma warning restore 612, 618
         }

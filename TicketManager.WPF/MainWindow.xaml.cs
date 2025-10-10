@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using ClosedXML.Excel;
 using Microsoft.Win32;
+using Microsoft.EntityFrameworkCore;
 using TicketManager.WPF.Data;
 using TicketManager.WPF.Models;
 using System.Windows.Input;
@@ -31,7 +32,7 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
     private void InitializeFilters()
     {
         // Popula Status
-        var statusOptions = new List<string> { "Todos", "Todos Abertos", "Aberto", "EmAndamento", "Fechado" };
+        var statusOptions = new List<string> { "Todos", "Todos Abertos", "Aberto", "EmAndamento", "Resolvido", "Fechado" };
         StatusFilterComboBox.ItemsSource = statusOptions;
         StatusFilterComboBox.SelectedIndex = 1; // Padrão: "Todos Abertos"
 
@@ -119,6 +120,38 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
         else
         {
             MessageBox.Show("Por favor, selecione um ticket para editar.", "Nenhum Ticket Selecionado", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+    }
+
+    private void ViewTicketButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (TicketsGrid.SelectedItem is Ticket selectedTicket)
+        {
+            try
+            {
+                // Carrega o ticket com seu histórico de reaberturas
+                var ticketWithHistory = _context.Tickets
+                    .Include(t => t.ReopeningLogs)
+                    .FirstOrDefault(t => t.Id == selectedTicket.Id);
+
+                if (ticketWithHistory != null)
+                {
+                    var viewWindow = new ViewTicketWindow(ticketWithHistory);
+                    viewWindow.ShowDialog();
+                }
+                else
+                {
+                    MessageBox.Show("O ticket selecionado não foi encontrado no banco de dados.", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erro ao carregar os detalhes do ticket: " + ex.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        else
+        {
+            MessageBox.Show("Por favor, selecione um ticket para visualizar.", "Nenhum Ticket Selecionado", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 
@@ -234,12 +267,15 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
 
     private void TicketsGrid_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
     {
+        ViewTicketButton.IsEnabled = false;
         EditTicketButton.IsEnabled = false;
         ReopenTicketButton.IsEnabled = false;
 
         if (TicketsGrid.SelectedItem is Ticket selectedTicket)
         {
-            if (selectedTicket.Status == TicketStatus.Fechado)
+            ViewTicketButton.IsEnabled = true; // Botão Visualizar sempre ativo se algo estiver selecionado
+
+            if (selectedTicket.Status == TicketStatus.Fechado || selectedTicket.Status == TicketStatus.Resolvido)
             {
                 ReopenTicketButton.IsEnabled = true;
             }
@@ -254,7 +290,7 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
     {
         if (TicketsGrid.SelectedItem is Ticket selectedTicket)
         {
-            if (selectedTicket.Status == TicketStatus.Fechado)
+            if (selectedTicket.Status == TicketStatus.Fechado || selectedTicket.Status == TicketStatus.Resolvido)
             {
                 AttemptToReopenTicket(selectedTicket);
             }
@@ -272,14 +308,33 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
 
     private void AttemptToReopenTicket(Ticket ticket)
     {
-        if (ticket.Status != TicketStatus.Fechado) return;
+        if (ticket.Status != TicketStatus.Fechado && ticket.Status != TicketStatus.Resolvido) return;
 
-        if (MessageBox.Show("Ticket já encerrado, deseja reabrir?", "Confirmar Reabertura", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+        if (ticket.Status == TicketStatus.Resolvido && !_isAdmin)
+        {
+            MessageBox.Show("Apenas administradores podem reabrir um ticket resolvido.", "Acesso Negado", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        var reasonWindow = new ReopenReasonWindow();
+        if (reasonWindow.ShowDialog() == true)
         {
             try
             {
+                // Criar o log de reabertura
+                var reopeningLog = new ReopeningLog
+                {
+                    TicketId = ticket.Id,
+                    ReopenedAt = DateTime.Now,
+                    ReopenedBy = Environment.UserName,
+                    Reason = reasonWindow.Reason
+                };
+                _context.ReopeningLogs.Add(reopeningLog);
+
+                // Atualizar o ticket
                 ticket.Status = TicketStatus.Aberto;
                 ticket.UpdatedAt = DateTime.Now;
+                
                 _context.SaveChanges();
                 LoadTickets();
             }

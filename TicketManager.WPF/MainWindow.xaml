@@ -9,23 +9,23 @@
         Title="Ticket-TI" Height="540" Width="960">
     <DockPanel Margin="10">
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
-            <Button x:Name="NewTicketButton" Content="Novo Ticket" Margin="0,0,5,0" Padding="10,5" Click="NewTicketButton_Click"/>
-            <Button x:Name="ViewTicketButton" Content="Visualizar" Margin="0,0,5,0" Padding="10,5" Click="ViewTicketButton_Click" IsEnabled="False"/>
-            <Button x:Name="EditTicketButton" Content="Editar Ticket" Margin="0,0,5,0" Padding="10,5" Click="EditTicketButton_Click" IsEnabled="False"/>
-            <Button x:Name="ReopenTicketButton" Content="Reabrir Ticket" Margin="0,0,5,0" Padding="10,5" Click="ReopenTicketButton_Click" IsEnabled="False"/>
-            <Button x:Name="DeleteTicketButton" Content="Excluir Ticket" Padding="10,5" Click="DeleteTicketButton_Click"/>
+            <Button x:Name="NewTicketButton" Content="Novo Ticket" Margin="0,0,5,0" Padding="10,5"/>
+            <Button x:Name="ViewTicketButton" Content="Visualizar" Margin="0,0,5,0" Padding="10,5" IsEnabled="False"/>
+            <Button x:Name="EditTicketButton" Content="Editar Ticket" Margin="0,0,5,0" Padding="10,5" IsEnabled="False"/>
+            <Button x:Name="ReopenTicketButton" Content="Reabrir Ticket" Margin="0,0,5,0" Padding="10,5" IsEnabled="False"/>
+            <Button x:Name="DeleteTicketButton" Content="Excluir Ticket" Padding="10,5"/>
 
             <Separator Margin="10,0"/>
 
-            <Button x:Name="ExportButton" Content="Exportar para Excel" Padding="10,5" Click="ExportButton_Click"/>
+            <Button x:Name="ExportButton" Content="Exportar para Excel" Padding="10,5"/>
 
             <Separator Margin="10,0"/>
 
-            <Button x:Name="SettingsButton" Content="Configurações" Padding="10,5" Click="SettingsButton_Click"/>
+            <Button x:Name="SettingsButton" Content="Configurações" Padding="10,5"/>
             <mah:DropDownButton Content="Estilo" Padding="10,5" Margin="5,0,0,0">
                 <mah:DropDownButton.Items>
-                    <MenuItem Header="Claro" Click="LightThemeMenuItem_Click"/>
-                    <MenuItem Header="Escuro" Click="DarkThemeMenuItem_Click"/>
+                    <MenuItem Header="Claro"/>
+                    <MenuItem Header="Escuro"/>
                 </mah:DropDownButton.Items>
             </mah:DropDownButton>
         </StackPanel>
@@ -41,11 +41,15 @@
             <ComboBox Name="StatusFilterComboBox" Width="120" VerticalAlignment="Center"/>
             <Label Content="Prioridade:" VerticalAlignment="Center" Margin="10,0,5,0"/>
             <ComboBox Name="PriorityFilterComboBox" Width="100" VerticalAlignment="Center"/>
-            <Button Name="FilterButton" Content="Filtrar" Margin="10,0,5,0" Padding="10,2" Click="FilterButton_Click"/>
-            <Button Name="ClearFilterButton" Content="Limpar" Padding="10,2" Click="ClearFilterButton_Click"/>
+            <Label Content="De:" VerticalAlignment="Center" Margin="10,0,5,0"/>
+            <DatePicker Name="StartDatePicker" Width="120" VerticalAlignment="Center"/>
+            <Label Content="Até:" VerticalAlignment="Center" Margin="10,0,5,0"/>
+            <DatePicker Name="EndDatePicker" Width="120" VerticalAlignment="Center"/>
+            <Button Name="FilterButton" Content="Filtrar" Margin="10,0,5,0" Padding="10,2"/>
+            <Button Name="ClearFilterButton" Content="Limpar" Padding="10,2"/>
         </StackPanel>
 
-        <DataGrid Name="TicketsGrid" AutoGenerateColumns="False" IsReadOnly="True" SelectionChanged="TicketsGrid_SelectionChanged" MouseDoubleClick="TicketsGrid_MouseDoubleClick">
+        <DataGrid Name="TicketsGrid" ItemsSource="{Binding Tickets}" SelectedItem="{Binding SelectedTicket, Mode=TwoWay}" AutoGenerateColumns="False" IsReadOnly="True">
             <DataGrid.RowStyle>
                 <Style TargetType="DataGridRow">
                     <Style.Triggers>

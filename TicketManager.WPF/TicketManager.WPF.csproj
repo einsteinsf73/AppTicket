@@ -30,4 +30,20 @@
     <PackageReference Include="Oracle.EntityFrameworkCore" Version="9.23.90" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <!-- Configurações do ClickOnce -->
+    <ApplicationVersion>1.0.0.*</ApplicationVersion>
+    <ApplicationRevision>0</ApplicationRevision>
+    <Install>true</Install>
+    <InstallFrom>Unc</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>0</UpdateInterval>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <PublishUrl>U:\T.I\Software Ticket\TicketManager.WPF\publish\</PublishUrl>
+    <InstallUrl>U:\T.I\Software Ticket\TicketManager.WPF\publish\</InstallUrl>
+    <CreateWebPageOnPublish>false</CreateWebPageOnPublish>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+  </PropertyGroup>
+
 </Project>

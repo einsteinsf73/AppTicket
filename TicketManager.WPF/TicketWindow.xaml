@@ -5,12 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TicketManager.WPF.Models"
         mc:Ignorable="d"
-        Title="Ticket" Height="480" Width="600"
+        Title="Ticket" Height="576" Width="720"
         WindowStartupLocation="CenterOwner">
     <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -35,14 +36,18 @@
 
         <!-- Status -->
         <Label Content="Status:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,5"/>
-        <ComboBox Name="StatusComboBox" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5" Padding="5" PreviewKeyDown="ComboBox_PreviewKeyDown"/>
+        <ComboBox Name="StatusComboBox" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5" Padding="5" PreviewKeyDown="ComboBox_PreviewKeyDown" SelectionChanged="StatusComboBox_SelectionChanged"/>
 
-        <!-- SLA -->
-        <Label Content="SLA (minutos):" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,5"/>
+        <!-- SLA Estimado -->
+        <Label x:Name="SlaLabel" Content="SLA (minutos):" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,5"/>
         <TextBox Name="SlaTextBox" Grid.Row="4" Grid.Column="1" Margin="0,0,0,5" Padding="5"/>
 
+        <!-- SLA Final -->
+        <Label Content="SLA Final (min):" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,5"/>
+        <TextBox Name="SlaFinalTextBox" Grid.Row="5" Grid.Column="1" Margin="0,0,0,5" Padding="5"/>
+
         <!-- Botões -->
-        <StackPanel Grid.Row="5" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+        <StackPanel Grid.Row="6" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
             <Button Name="SaveButton" Content="Salvar" Width="100" Padding="10,5" Margin="0,0,10,0" Click="SaveButton_Click"/>
             <Button Name="CancelButton" Content="Cancelar" Width="100" Padding="10,5" IsCancel="True"/>
         </StackPanel>

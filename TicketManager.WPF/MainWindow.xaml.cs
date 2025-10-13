@@ -356,18 +356,13 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
         SettingsButton.Visibility = _isAdmin ? Visibility.Visible : Visibility.Collapsed;
     }
 
-    private void ThemeToggleButton_Click(object sender, RoutedEventArgs e)
+    private void LightThemeMenuItem_Click(object sender, RoutedEventArgs e)
     {
-        var currentApp = Application.Current;
-        var currentTheme = ThemeManager.Current.DetectTheme(currentApp);
+        ThemeManager.Current.ChangeTheme(Application.Current, "Light.Blue");
+    }
 
-        if (currentTheme != null && currentTheme.BaseColorScheme == "Dark")
-        {
-            ThemeManager.Current.ChangeTheme(currentApp, "Light.Blue");
-        }
-        else
-        {
-            ThemeManager.Current.ChangeTheme(currentApp, "Dark.Blue");
-        }
+    private void DarkThemeMenuItem_Click(object sender, RoutedEventArgs e)
+    {
+        ThemeManager.Current.ChangeTheme(Application.Current, "Dark.Blue");
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
 using TicketManager.WPF.Data;
@@ -11,9 +12,11 @@ using TicketManager.WPF.Data;
 namespace TicketManager.WPF.Migrations
 {
     [DbContext(typeof(TicketContext))]
-    partial class TicketContextModelSnapshot : ModelSnapshot
+    [Migration("20251010172025_UpdateColumnNamingAndComments")]
+    partial class UpdateColumnNamingAndComments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -77,7 +80,7 @@ namespace TicketManager.WPF.Migrations
 
                     b.HasIndex("TicketId");
 
-                    b.ToTable("HIST_REABERTURA", (string)null);
+                    b.ToTable("REOPENING_LOGS", (string)null);
                 });
 
             modelBuilder.Entity("TicketManager.WPF.Models.Ticket", b =>
@@ -114,10 +117,6 @@ namespace TicketManager.WPF.Migrations
                         .HasColumnType("NUMBER(10)")
                         .HasColumnName("PRIORITY")
                         .HasComment("0=Baixa, 1=Media, 2=Alta");
-
-                    b.Property<int?>("SLAFinal")
-                        .HasColumnType("NUMBER(10)")
-                        .HasColumnName("SLAFINAL");
 
                     b.Property<int>("SlaMinutes")
                         .HasColumnType("NUMBER(10)")

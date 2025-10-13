@@ -15,6 +15,7 @@ namespace TicketManager.WPF
             PriorityTextBlock.Text = ticket.Priority.ToString();
             StatusTextBlock.Text = ticket.Status.ToString();
             SlaTextBlock.Text = ticket.SlaMinutes.ToString();
+            SlaFinalTextBlock.Text = ticket.SLAFinal?.ToString() ?? "Não definido";
             CreatedAtTextBlock.Text = ticket.CreatedAt.ToString("dd/MM/yyyy HH:mm");
             CreatedByTextBlock.Text = $"{ticket.CreatedByWindowsUser} ({ticket.CreatedByHostname})";
 

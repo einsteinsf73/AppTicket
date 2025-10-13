@@ -38,6 +38,7 @@ namespace TicketManager.WPF.Models
         [MaxLength(256)]
         public string CreatedByHostname { get; set; } = string.Empty;
         public int SlaMinutes { get; set; }
+        public int? SLAFinal { get; set; }
         public virtual ICollection<ReopeningLog> ReopeningLogs { get; set; } = new List<ReopeningLog>();
     }
 }

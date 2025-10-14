@@ -7,6 +7,9 @@
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
         Title="Ticket-TI" Height="540" Width="960">
+    <mah:MetroWindow.Resources>
+
+    </mah:MetroWindow.Resources>
     <DockPanel Margin="10">
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
             <Button x:Name="NewTicketButton" Content="Novo Ticket" Margin="0,0,5,0" Padding="10,5" Click="NewTicketButton_Click"/>
@@ -41,78 +44,91 @@
             <ComboBox Name="StatusFilterComboBox" Width="120" VerticalAlignment="Center"/>
             <Label Content="Prioridade:" VerticalAlignment="Center" Margin="10,0,5,0"/>
             <ComboBox Name="PriorityFilterComboBox" Width="100" VerticalAlignment="Center"/>
+            <Label Content="De:" VerticalAlignment="Center" Margin="10,0,5,0"/>
+            <DatePicker Name="StartDatePicker" Width="120" VerticalAlignment="Center" PreviewKeyDown="DatePicker_PreviewKeyDown"/>
+            <Label Content="Até:" VerticalAlignment="Center" Margin="10,0,5,0"/>
+            <DatePicker Name="EndDatePicker" Width="120" VerticalAlignment="Center" PreviewKeyDown="DatePicker_PreviewKeyDown"/>
             <Button Name="FilterButton" Content="Filtrar" Margin="10,0,5,0" Padding="10,2" Click="FilterButton_Click"/>
             <Button Name="ClearFilterButton" Content="Limpar" Padding="10,2" Click="ClearFilterButton_Click"/>
         </StackPanel>
 
-        <DataGrid Name="TicketsGrid" AutoGenerateColumns="False" IsReadOnly="True" SelectionChanged="TicketsGrid_SelectionChanged" MouseDoubleClick="TicketsGrid_MouseDoubleClick">
+<DataGrid Name="TicketsGrid" AutoGenerateColumns="False" IsReadOnly="True" SelectionChanged="TicketsGrid_SelectionChanged" MouseDoubleClick="TicketsGrid_MouseDoubleClick" GridLinesVisibility="None">
             <DataGrid.RowStyle>
-                <Style TargetType="DataGridRow">
-                    <Style.Triggers>
-                        <!-- Tickets Abertos -->
-                        <MultiDataTrigger>
-                            <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding Status}" Value="Aberto"/>
-                                <Condition Binding="{Binding Priority}" Value="Alta"/>
-                            </MultiDataTrigger.Conditions>
-                            <Setter Property="Background" Value="LightCoral"/>
-                        </MultiDataTrigger>
-                        <MultiDataTrigger>
-                            <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding Status}" Value="Aberto"/>
-                                <Condition Binding="{Binding Priority}" Value="Media"/>
-                            </MultiDataTrigger.Conditions>
-                            <Setter Property="Background" Value="LightYellow"/>
-                            <Setter Property="Foreground" Value="DarkOliveGreen"/>
-                        </MultiDataTrigger>
-                        <MultiDataTrigger>
-                            <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding Status}" Value="Aberto"/>
-                                <Condition Binding="{Binding Priority}" Value="Baixa"/>
-                            </MultiDataTrigger.Conditions>
-                            <Setter Property="Background" Value="LightGreen"/>
-                        </MultiDataTrigger>
-                        
-                        <!-- Tickets Em Andamento (usaremos a mesma cor da prioridade) -->
-                        <MultiDataTrigger>
-                            <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding Status}" Value="EmAndamento"/>
-                                <Condition Binding="{Binding Priority}" Value="Alta"/>
-                            </MultiDataTrigger.Conditions>
-                            <Setter Property="Background" Value="LightCoral"/>
-                        </MultiDataTrigger>
-                        <MultiDataTrigger>
-                            <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding Status}" Value="EmAndamento"/>
-                                <Condition Binding="{Binding Priority}" Value="Media"/>
-                            </MultiDataTrigger.Conditions>
-                            <Setter Property="Background" Value="LightYellow"/>
-                            <Setter Property="Foreground" Value="DarkOliveGreen"/>
-                        </MultiDataTrigger>
-                        <MultiDataTrigger>
-                            <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding Status}" Value="EmAndamento"/>
-                                <Condition Binding="{Binding Priority}" Value="Baixa"/>
-                            </MultiDataTrigger.Conditions>
-                            <Setter Property="Background" Value="LightGreen"/>
-                        </MultiDataTrigger>
+    <Style TargetType="DataGridRow">
+        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        <Setter Property="BorderBrush" Value="LightGray"/>
+        <Style.Triggers>
+            <!-- Tickets Abertos -->
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Status}" Value="Aberto"/>
+                    <Condition Binding="{Binding Priority}" Value="Alta"/>
+                </MultiDataTrigger.Conditions>
+                <Setter Property="Background" Value="{DynamicResource Ticket.Status.Alta.Background}"/>
+            </MultiDataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Status}" Value="Aberto"/>
+                    <Condition Binding="{Binding Priority}" Value="Media"/>
+                </MultiDataTrigger.Conditions>
+                <Setter Property="Background" Value="{DynamicResource Ticket.Status.Media.Background}"/>
+                <Setter Property="Foreground" Value="{DynamicResource Ticket.Status.Media.Foreground}"/>
+            </MultiDataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Status}" Value="Aberto"/>
+                    <Condition Binding="{Binding Priority}" Value="Baixa"/>
+                </MultiDataTrigger.Conditions>
+                <Setter Property="Background" Value="{DynamicResource Ticket.Status.Baixa.Background}"/>
+            </MultiDataTrigger>
+            
+            <!-- Tickets Em Andamento (usaremos a mesma cor da prioridade) -->
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Status}" Value="EmAndamento"/>
+                    <Condition Binding="{Binding Priority}" Value="Alta"/>
+                </MultiDataTrigger.Conditions>
+                <Setter Property="Background" Value="{DynamicResource Ticket.Status.Alta.Background}"/>
+            </MultiDataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Status}" Value="EmAndamento"/>
+                    <Condition Binding="{Binding Priority}" Value="Media"/>
+                </MultiDataTrigger.Conditions>
+                <Setter Property="Background" Value="{DynamicResource Ticket.Status.Media.Background}"/>
+                <Setter Property="Foreground" Value="{DynamicResource Ticket.Status.Media.Foreground}"/>
+            </MultiDataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Status}" Value="EmAndamento"/>
+                    <Condition Binding="{Binding Priority}" Value="Baixa"/>
+                </MultiDataTrigger.Conditions>
+                <Setter Property="Background" Value="{DynamicResource Ticket.Status.Baixa.Background}"/>
+            </MultiDataTrigger>
 
-                        <!-- Tickets Fechados e Resolvidos -->
-                        <DataTrigger Binding="{Binding Status}" Value="Fechado">
-                            <Setter Property="Background" Value="LightBlue"/>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Status}" Value="Resolvido">
-                            <Setter Property="Background" Value="LightBlue"/>
-                        </DataTrigger>
-
-                        <!-- Estilo de Seleção -->
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="LightGray"/>
-                            <Setter Property="Foreground" Value="Black"/>
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-            </DataGrid.RowStyle>
+            <!-- Tickets Fechados e Resolvidos -->
+            <DataTrigger Binding="{Binding Status}" Value="Fechado">
+                <Setter Property="Background" Value="{DynamicResource Ticket.Status.Fechado.Background}"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Status}" Value="Resolvido">
+                <Setter Property="Background" Value="{DynamicResource Ticket.Status.Resolvido.Background}"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+</DataGrid.RowStyle>
+<DataGrid.CellStyle>
+    <Style TargetType="DataGridCell">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=DataGridRow}}" Value="True">
+                <Setter Property="Foreground" Value="#3366FF"/>
+            </DataTrigger>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="LightGray"/>
+                <Setter Property="Foreground" Value="Black"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+</DataGrid.CellStyle>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
                 <DataGridTextColumn Header="Título" Binding="{Binding Title}" Width="*"/>

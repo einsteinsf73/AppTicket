@@ -30,8 +30,16 @@ namespace TicketManager.WPF
 
                     if (authorizedUser != null)
                     {
-                        var mainWindow = new MainWindow(authorizedUser);
-                        mainWindow.Show();
+                        if (authorizedUser.IsActive == 1)
+                        {
+                            var mainWindow = new MainWindow(authorizedUser);
+                            mainWindow.Show();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Acesso Negado. Seu usuário está inativo. Contate um administrador.", "Usuário Inativo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            Shutdown();
+                        }
                     }
                     else
                     {

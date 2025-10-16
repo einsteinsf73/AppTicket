@@ -10,6 +10,7 @@ using TicketManager.WPF.Models;
 using System.Windows.Input;
 using System.Net;
 using ControlzEx.Theming;
+using System.Windows.Controls;
 
 namespace TicketManager.WPF;
 
@@ -72,11 +73,34 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
                 }
             }
 
+            // Aplica filtro de Data de Criação
+            if (StartDatePicker.SelectedDate.HasValue)
+            {
+                query = query.Where(t => t.CreatedAt.Date >= StartDatePicker.SelectedDate.Value.Date);
+            }
+
+            if (EndDatePicker.SelectedDate.HasValue)
+            {
+                query = query.Where(t => t.CreatedAt.Date <= EndDatePicker.SelectedDate.Value.Date);
+            }
+
             TicketsGrid.ItemsSource = query.ToList();
         }
         catch (Exception ex)
         {
             MessageBox.Show("Erro ao carregar os tickets: " + ex.Message, "Erro de Conexão", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void DatePicker_PreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.H)
+        {
+            if (sender is DatePicker datePicker)
+            {
+                datePicker.SelectedDate = DateTime.Now;
+                e.Handled = true;
+            }
         }
     }
 
@@ -89,6 +113,8 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
     {
         StatusFilterComboBox.SelectedIndex = 0;
         PriorityFilterComboBox.SelectedIndex = 0;
+        StartDatePicker.SelectedDate = null;
+        EndDatePicker.SelectedDate = null;
         LoadTickets();
     }
 
@@ -356,13 +382,47 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
         SettingsButton.Visibility = _isAdmin ? Visibility.Visible : Visibility.Collapsed;
     }
 
+    private void ChangeTheme(string theme)
+    {
+        ThemeManager.Current.ChangeTheme(Application.Current, theme);
+
+        var colorDictionary = Application.Current.Resources.MergedDictionaries
+            .FirstOrDefault(d => d.Source != null && (d.Source.OriginalString.EndsWith("LightColors.xaml") || d.Source.OriginalString.EndsWith("DarkColors.xaml")));
+
+        var index = -1;
+        if (colorDictionary != null)
+        {
+            index = Application.Current.Resources.MergedDictionaries.IndexOf(colorDictionary);
+            Application.Current.Resources.MergedDictionaries.Remove(colorDictionary);
+        }
+
+        var newColorDictionary = new ResourceDictionary();
+        if (theme.StartsWith("Dark"))
+        {
+            newColorDictionary.Source = new Uri("DarkColors.xaml", UriKind.Relative);
+        }
+        else
+        {
+            newColorDictionary.Source = new Uri("LightColors.xaml", UriKind.Relative);
+        }
+
+        if (index == -1)
+        {
+            Application.Current.Resources.MergedDictionaries.Add(newColorDictionary);
+        }
+        else
+        {
+            Application.Current.Resources.MergedDictionaries.Insert(index, newColorDictionary);
+        }
+    }
+
     private void LightThemeMenuItem_Click(object sender, RoutedEventArgs e)
     {
-        ThemeManager.Current.ChangeTheme(Application.Current, "Light.Blue");
+        ChangeTheme("Light.Blue");
     }
 
     private void DarkThemeMenuItem_Click(object sender, RoutedEventArgs e)
     {
-        ThemeManager.Current.ChangeTheme(Application.Current, "Dark.Blue");
+        ChangeTheme("Dark.Blue");
     }
 }

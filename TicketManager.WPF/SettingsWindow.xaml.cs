@@ -57,8 +57,16 @@ namespace TicketManager.WPF
                     return;
                 }
 
-                var message = $"Tem certeza que deseja remover o acesso para o usuário '{selectedUser.WindowsUserName}'?";
-                if (MessageBox.Show(message, "Confirmar Remoção", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                // Verifica se o usuário possui tickets associados
+                var hasTickets = _context.Tickets.Any(t => t.CreatedByWindowsUser == selectedUser.WindowsUserName);
+                if (hasTickets)
+                {
+                    MessageBox.Show($"O usuário '{selectedUser.WindowsUserName}' não pode ser excluído pois possui tickets registrados em seu nome. Para impedir o acesso, você pode marcá-lo como 'Inativo'.", "Exclusão Não Permitida", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                var message = $"Tem certeza que deseja remover o acesso para o usuário '{selectedUser.WindowsUserName}'? Esta ação não poderá ser desfeita.";
+                if (MessageBox.Show(message, "Confirmar Exclusão", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
                 {
                     _context.AuthorizedUsers.Remove(selectedUser);
                     _context.SaveChanges();

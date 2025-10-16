@@ -17,11 +17,20 @@ namespace TicketManager.WPF.Models
 
         public int IsAdmin { get; set; }
 
+        public int IsActive { get; set; } = 1; // Default to active
+
         [NotMapped]
         public bool IsAdminBool
         {
             get { return IsAdmin == 1; }
             set { IsAdmin = value ? 1 : 0; }
+        }
+
+        [NotMapped]
+        public bool IsInactiveBool
+        {
+            get { return IsActive == 0; }
+            set { IsActive = value ? 0 : 1; }
         }
     }
 }

@@ -39,6 +39,10 @@ namespace TicketManager.WPF.Models
         public string CreatedByHostname { get; set; } = string.Empty;
         public int SlaMinutes { get; set; }
         public int? SLAFinal { get; set; }
+
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
+
         public virtual ICollection<ReopeningLog> ReopeningLogs { get; set; } = new List<ReopeningLog>();
     }
 }

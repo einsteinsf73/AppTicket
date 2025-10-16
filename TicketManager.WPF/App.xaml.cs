@@ -1,20 +1,29 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Serilog;
+using System;
 using System.Windows;
 using TicketManager.WPF.Data;
-using System.Linq;
-using System.Windows.Threading;
+using TicketManager.WPF.ViewModels;
 
 namespace TicketManager.WPF
 {
     public partial class App : Application
     {
-        protected override void OnStartup(StartupEventArgs e)
-        {
-            base.OnStartup(e);
-            DispatcherUnhandledException += Application_DispatcherUnhandledException;
+        private IHost _host;
 
-            try
-            {
-                using (var context = new TicketContext())
+        public App()
+        {
+            _host = Host.CreateDefaultBuilder()
+                .UseSerilog((context, loggerConfig) => 
+                    loggerConfig
+                        .MinimumLevel.Debug()
+                        .Enrich.FromLogContext()
+                        .Enrich.WithProperty("Application", "TicketManager")
+                        .WriteTo.Console()
+                        .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 14)
+                )
+                .ConfigureServices((context, services) =>
                 {
                     // Se a tabela de usuários estiver vazia, adiciona o usuário atual como admin.
                     // Isso só acontece na primeira execução para popular o banco de dados.
@@ -57,15 +66,24 @@ namespace TicketManager.WPF
             }
         }
 
-        private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        protected override async void OnStartup(StartupEventArgs e)
         {
-            // Mostra a exceção completa para um diagnóstico detalhado
-            MessageBox.Show("Ocorreu um erro crítico e a aplicação será encerrada.\n\nDetalhes: " + e.Exception.ToString(), 
-                            "Erro Inesperado", MessageBoxButton.OK, MessageBoxImage.Error);
-            
-            e.Handled = true;
-            Shutdown();
+            await _host.StartAsync();
+
+            var mainWindow = _host.Services.GetRequiredService<MainWindow>();
+            mainWindow.Show();
+
+            base.OnStartup(e);
+        }
+
+        protected override async void OnExit(ExitEventArgs e)
+        {
+            using (_host)
+            {
+                await _host.StopAsync(TimeSpan.FromSeconds(5));
+            }
+
+            base.OnExit(e);
         }
     }
 }
-

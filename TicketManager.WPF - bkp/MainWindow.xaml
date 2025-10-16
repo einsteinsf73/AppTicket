@@ -8,11 +8,7 @@
         mc:Ignorable="d"
         Title="Ticket-TI" Height="540" Width="960">
     <mah:MetroWindow.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="LightColors.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
+
     </mah:MetroWindow.Resources>
     <DockPanel Margin="10">
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
@@ -56,7 +52,7 @@
             <Button Name="ClearFilterButton" Content="Limpar" Padding="10,2" Click="ClearFilterButton_Click"/>
         </StackPanel>
 
-        <DataGrid Name="TicketsGrid" AutoGenerateColumns="False" IsReadOnly="True" SelectionChanged="TicketsGrid_SelectionChanged" MouseDoubleClick="TicketsGrid_MouseDoubleClick" GridLinesVisibility="None">
+<DataGrid Name="TicketsGrid" AutoGenerateColumns="False" IsReadOnly="True" SelectionChanged="TicketsGrid_SelectionChanged" MouseDoubleClick="TicketsGrid_MouseDoubleClick" GridLinesVisibility="None">
             <DataGrid.RowStyle>
     <Style TargetType="DataGridRow">
         <Setter Property="BorderThickness" Value="0,0,0,1"/>

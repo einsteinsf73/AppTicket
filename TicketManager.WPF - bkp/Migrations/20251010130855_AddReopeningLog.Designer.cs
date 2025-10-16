@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
 using TicketManager.WPF.Data;
@@ -11,13 +12,15 @@ using TicketManager.WPF.Data;
 namespace TicketManager.WPF.Migrations
 {
     [DbContext(typeof(TicketContext))]
-    partial class TicketContextModelSnapshot : ModelSnapshot
+    [Migration("20251010130855_AddReopeningLog")]
+    partial class AddReopeningLog
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "9.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -26,24 +29,17 @@ namespace TicketManager.WPF.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)")
-                        .HasColumnName("ID");
+                        .HasColumnType("NUMBER(10)");
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("IsActive")
-                        .HasColumnType("NUMBER(10)")
-                        .HasColumnName("IS_ACTIVE");
-
                     b.Property<int>("IsAdmin")
-                        .HasColumnType("NUMBER(10)")
-                        .HasColumnName("IS_ADMIN");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("WindowsUserName")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("NVARCHAR2(256)")
-                        .HasColumnName("WINDOWS_USER_NAME");
+                        .HasColumnType("NVARCHAR2(256)");
 
                     b.HasKey("Id");
 
@@ -54,92 +50,71 @@ namespace TicketManager.WPF.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)")
-                        .HasColumnName("ID");
+                        .HasColumnType("NUMBER(10)");
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Reason")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("REASON");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTime>("ReopenedAt")
-                        .HasColumnType("TIMESTAMP(7)")
-                        .HasColumnName("REOPENED_AT");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("ReopenedBy")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("REOPENED_BY");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int>("TicketId")
-                        .HasColumnType("NUMBER(10)")
-                        .HasColumnName("TICKET_ID");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("TicketId");
 
-                    b.ToTable("HIST_REABERTURA", (string)null);
+                    b.ToTable("REOPENING_LOGS", (string)null);
                 });
 
             modelBuilder.Entity("TicketManager.WPF.Models.Ticket", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)")
-                        .HasColumnName("ID");
+                        .HasColumnType("NUMBER(10)");
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TIMESTAMP(7)")
-                        .HasColumnName("CREATED_AT");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("CreatedByHostname")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("NVARCHAR2(256)")
-                        .HasColumnName("CREATED_BY_HOSTNAME");
+                        .HasColumnType("NVARCHAR2(256)");
 
                     b.Property<string>("CreatedByWindowsUser")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("NVARCHAR2(256)")
-                        .HasColumnName("CREATED_BY_WINDOWS_USER");
+                        .HasColumnType("NVARCHAR2(256)");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("DESCRIPTION");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int>("Priority")
-                        .HasColumnType("NUMBER(10)")
-                        .HasColumnName("PRIORITY")
-                        .HasComment("0=Baixa, 1=Media, 2=Alta");
-
-                    b.Property<int?>("SLAFinal")
-                        .HasColumnType("NUMBER(10)")
-                        .HasColumnName("SLAFINAL");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("SlaMinutes")
-                        .HasColumnType("NUMBER(10)")
-                        .HasColumnName("SLA_MINUTES");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("Status")
-                        .HasColumnType("NUMBER(10)")
-                        .HasColumnName("STATUS")
-                        .HasComment("0=Aberto, 1=EmAndamento, 2=Resolvido, 3=Fechado");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("TITLE");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("TIMESTAMP(7)")
-                        .HasColumnName("UPDATED_AT");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("Id");
 
@@ -150,58 +125,46 @@ namespace TicketManager.WPF.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)")
-                        .HasColumnName("ID");
+                        .HasColumnType("NUMBER(10)");
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TIMESTAMP(7)")
-                        .HasColumnName("CREATED_AT");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("DeletedByHostname")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("DELETED_BY_HOSTNAME");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("DeletedByWindowsUser")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("DELETED_BY_WINDOWS_USER");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTime>("DeletionTimestamp")
-                        .HasColumnType("TIMESTAMP(7)")
-                        .HasColumnName("DELETION_TIMESTAMP");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("DESCRIPTION");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<int>("OriginalTicketId")
-                        .HasColumnType("NUMBER(10)")
-                        .HasColumnName("ORIGINAL_TICKET_ID");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("Priority")
-                        .HasColumnType("NUMBER(10)")
-                        .HasColumnName("PRIORITY");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("SlaMinutes")
-                        .HasColumnType("NUMBER(10)")
-                        .HasColumnName("SLA_MINUTES");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("Status")
-                        .HasColumnType("NUMBER(10)")
-                        .HasColumnName("STATUS");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("TITLE");
+                        .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("TIMESTAMP(7)")
-                        .HasColumnName("UPDATED_AT");
+                        .HasColumnType("TIMESTAMP(7)");
 
                     b.HasKey("Id");
 

@@ -17,7 +17,7 @@ namespace TicketManager.WPF.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "9.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -30,10 +30,6 @@ namespace TicketManager.WPF.Migrations
                         .HasColumnName("ID");
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("IsActive")
-                        .HasColumnType("NUMBER(10)")
-                        .HasColumnName("IS_ACTIVE");
 
                     b.Property<int>("IsAdmin")
                         .HasColumnType("NUMBER(10)")

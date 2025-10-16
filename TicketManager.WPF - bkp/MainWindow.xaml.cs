@@ -113,8 +113,6 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
     {
         StatusFilterComboBox.SelectedIndex = 0;
         PriorityFilterComboBox.SelectedIndex = 0;
-        StartDatePicker.SelectedDate = null;
-        EndDatePicker.SelectedDate = null;
         LoadTickets();
     }
 

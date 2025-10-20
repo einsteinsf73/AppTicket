@@ -2,8 +2,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
+using System.Linq;
 using System.Windows;
 using TicketManager.WPF.Data;
+using TicketManager.WPF.Models;
 using TicketManager.WPF.ViewModels;
 
 namespace TicketManager.WPF
@@ -15,7 +17,7 @@ namespace TicketManager.WPF
         public App()
         {
             _host = Host.CreateDefaultBuilder()
-                .UseSerilog((context, loggerConfig) => 
+                .UseSerilog((context, loggerConfig) =>
                     loggerConfig
                         .MinimumLevel.Debug()
                         .Enrich.FromLogContext()
@@ -25,11 +27,28 @@ namespace TicketManager.WPF
                 )
                 .ConfigureServices((context, services) =>
                 {
-                    // Se a tabela de usuários estiver vazia, adiciona o usuário atual como admin.
-                    // Isso só acontece na primeira execução para popular o banco de dados.
-                    if (context.AuthorizedUsers.Count() == 0)
+                    services.AddDbContext<TicketContext>();
+                    services.AddSingleton<ITicketRepository, TicketRepository>();
+                    services.AddTransient<MainViewModel>();
+                    services.AddTransient<MainWindow>();
+                })
+                .Build();
+        }
+
+        protected override async void OnStartup(StartupEventArgs e)
+        {
+            await _host.StartAsync();
+
+            using (var scope = _host.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    var context = services.GetRequiredService<TicketContext>();
+                    
+                    if (!context.AuthorizedUsers.Any())
                     {
-                        var firstUser = new Models.AuthorizedUser { WindowsUserName = Environment.UserName, IsAdminBool = true };
+                        var firstUser = new AuthorizedUser { WindowsUserName = Environment.UserName, IsAdminBool = true, IsActive = 1 };
                         context.AuthorizedUsers.Add(firstUser);
                         context.SaveChanges();
                     }
@@ -56,22 +75,14 @@ namespace TicketManager.WPF
                         Shutdown();
                     }
                 }
+                catch (Exception ex)
+                {
+                    var errorMessage = ex.InnerException?.Message ?? ex.Message;
+                    MessageBox.Show("Ocorreu um erro crítico na inicialização ao tentar conectar ao banco de dados.\n\nDetalhes: " + errorMessage,
+                                    "Erro de Conexão", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Shutdown();
+                }
             }
-            catch (Exception ex)
-            {
-                var errorMessage = ex.InnerException?.Message ?? ex.Message;
-                MessageBox.Show("Ocorreu um erro crítico na inicialização ao tentar conectar ao banco de dados.\n\nDetalhes: " + errorMessage, 
-                                "Erro de Conexão", MessageBoxButton.OK, MessageBoxImage.Error);
-                Shutdown();
-            }
-        }
-
-        protected override async void OnStartup(StartupEventArgs e)
-        {
-            await _host.StartAsync();
-
-            var mainWindow = _host.Services.GetRequiredService<MainWindow>();
-            mainWindow.Show();
 
             base.OnStartup(e);
         }

@@ -7,32 +7,26 @@
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
         Title="Ticket-TI" Height="540" Width="960">
-    <mah:MetroWindow.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="LightColors.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </mah:MetroWindow.Resources>
+
     <DockPanel Margin="10">
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
-            <Button x:Name="NewTicketButton" Content="Novo Ticket" Margin="0,0,5,0" Padding="10,5"/>
-            <Button x:Name="ViewTicketButton" Content="Visualizar" Margin="0,0,5,0" Padding="10,5" IsEnabled="False"/>
-            <Button x:Name="EditTicketButton" Content="Editar Ticket" Margin="0,0,5,0" Padding="10,5" IsEnabled="False"/>
-            <Button x:Name="ReopenTicketButton" Content="Reabrir Ticket" Margin="0,0,5,0" Padding="10,5" IsEnabled="False"/>
-            <Button x:Name="DeleteTicketButton" Content="Excluir Ticket" Padding="10,5"/>
+            <Button x:Name="NewTicketButton" Content="Novo Ticket" Margin="0,0,5,0" Padding="10,5" Click="NewTicketButton_Click"/>
+            <Button x:Name="ViewTicketButton" Content="Visualizar" Margin="0,0,5,0" Padding="10,5" IsEnabled="False" Click="ViewTicketButton_Click"/>
+            <Button x:Name="EditTicketButton" Content="Editar Ticket" Margin="0,0,5,0" Padding="10,5" IsEnabled="False" Click="EditTicketButton_Click"/>
+            <Button x:Name="ReopenTicketButton" Content="Reabrir Ticket" Margin="0,0,5,0" Padding="10,5" IsEnabled="False" Click="ReopenTicketButton_Click"/>
+            <Button x:Name="DeleteTicketButton" Content="Excluir Ticket" Padding="10,5" Click="DeleteTicketButton_Click"/>
 
             <Separator Margin="10,0"/>
 
-            <Button x:Name="ExportButton" Content="Exportar para Excel" Padding="10,5"/>
+            <Button x:Name="ExportButton" Content="Exportar para Excel" Padding="10,5" Click="ExportButton_Click"/>
 
             <Separator Margin="10,0"/>
 
-            <Button x:Name="SettingsButton" Content="Configurações" Padding="10,5"/>
+            <Button x:Name="SettingsButton" Content="Configurações" Padding="10,5" Click="SettingsButton_Click"/>
             <mah:DropDownButton Content="Estilo" Padding="10,5" Margin="5,0,0,0">
                 <mah:DropDownButton.Items>
-                    <MenuItem Header="Claro"/>
-                    <MenuItem Header="Escuro"/>
+                    <MenuItem Header="Claro" Click="LightThemeMenuItem_Click"/>
+                    <MenuItem Header="Escuro" Click="DarkThemeMenuItem_Click"/>
                 </mah:DropDownButton.Items>
             </mah:DropDownButton>
         </StackPanel>
@@ -69,6 +63,7 @@
                     <Condition Binding="{Binding Priority}" Value="Alta"/>
                 </MultiDataTrigger.Conditions>
                 <Setter Property="Background" Value="{DynamicResource Ticket.Status.Alta.Background}"/>
+                <Setter Property="Foreground" Value="{DynamicResource Ticket.Status.Alta.Foreground}"/>
             </MultiDataTrigger>
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
@@ -84,6 +79,7 @@
                     <Condition Binding="{Binding Priority}" Value="Baixa"/>
                 </MultiDataTrigger.Conditions>
                 <Setter Property="Background" Value="{DynamicResource Ticket.Status.Baixa.Background}"/>
+                <Setter Property="Foreground" Value="{DynamicResource Ticket.Status.Baixa.Foreground}"/>
             </MultiDataTrigger>
             
             <!-- Tickets Em Andamento (usaremos a mesma cor da prioridade) -->
@@ -93,6 +89,7 @@
                     <Condition Binding="{Binding Priority}" Value="Alta"/>
                 </MultiDataTrigger.Conditions>
                 <Setter Property="Background" Value="{DynamicResource Ticket.Status.Alta.Background}"/>
+                <Setter Property="Foreground" Value="{DynamicResource Ticket.Status.Alta.Foreground}"/>
             </MultiDataTrigger>
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
@@ -108,6 +105,7 @@
                     <Condition Binding="{Binding Priority}" Value="Baixa"/>
                 </MultiDataTrigger.Conditions>
                 <Setter Property="Background" Value="{DynamicResource Ticket.Status.Baixa.Background}"/>
+                <Setter Property="Foreground" Value="{DynamicResource Ticket.Status.Baixa.Foreground}"/>
             </MultiDataTrigger>
 
             <!-- Tickets Fechados e Resolvidos -->

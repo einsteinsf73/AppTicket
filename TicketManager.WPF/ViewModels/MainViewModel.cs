@@ -25,7 +25,7 @@ namespace TicketManager.WPF.ViewModels
 
         public async Task LoadTicketsAsync()
         {
-            var tickets = await _ticketRepository.GetAllAsync();
+            var tickets = await _ticketRepository.GetAllTicketsAsync();
             Tickets.Clear();
             foreach (var ticket in tickets)
             {

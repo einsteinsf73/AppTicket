@@ -48,6 +48,9 @@
             <DatePicker Name="EndDatePicker" Width="120" VerticalAlignment="Center" PreviewKeyDown="DatePicker_PreviewKeyDown"/>
             <Button Name="FilterButton" Content="Filtrar" Margin="10,0,5,0" Padding="10,2" Click="FilterButton_Click"/>
             <Button Name="ClearFilterButton" Content="Limpar" Padding="10,2" Click="ClearFilterButton_Click"/>
+            <Button x:Name="ColumnSettingsButton" Margin="10,0,0,0" Padding="5" Click="ColumnSettingsButton_Click">
+                <Path Data="M0,1.5 L18,1.5 M0,7.5 L18,7.5 M0,13.5 L18,13.5" Stroke="Black" StrokeThickness="2"/>
+            </Button>
         </StackPanel>
 
         <DataGrid Name="TicketsGrid" AutoGenerateColumns="False" IsReadOnly="True" SelectionChanged="TicketsGrid_SelectionChanged" MouseDoubleClick="TicketsGrid_MouseDoubleClick" GridLinesVisibility="None">
@@ -142,4 +145,9 @@
             </DataGrid.Columns>
         </DataGrid>
     </DockPanel>
+    <mah:MetroWindow.Resources>
+        <ContextMenu x:Key="ColumnSettingsContextMenu" x:Name="ColumnSettingsContextMenu">
+            <!-- Menu items will be added dynamically -->
+        </ContextMenu>
+    </mah:MetroWindow.Resources>
 </mah:MetroWindow>

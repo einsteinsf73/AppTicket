@@ -8,7 +8,7 @@ using System.Windows.Controls;
 
 namespace TicketManager.WPF
 {
-    public partial class TicketWindow : Window
+    public partial class TicketWindow : MahApps.Metro.Controls.MetroWindow
     {
         private readonly TicketContext _context;
         private Ticket _ticket;
@@ -99,6 +99,69 @@ namespace TicketManager.WPF
             {
                 _context.SaveChanges();
                 DialogResult = true; // Fecha a janela e indica sucesso
+            }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException ex)
+            {
+                // Um conflito de concorrência ocorreu
+                foreach (var entry in ex.Entries)
+                {
+                    if (entry.Entity is Ticket ticket)
+                    {
+                        var databaseEntry = entry.GetDatabaseValues();
+                        if (databaseEntry == null)
+                        {
+                            MessageBox.Show("O ticket foi excluído por outro usuário.", "Erro de Concorrência", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                        else
+                        {
+                            var databaseTicket = (Ticket)databaseEntry.ToObject();
+
+                            // Oferecer ao usuário a opção de sobrescrever ou recarregar
+                            var result = MessageBox.Show(
+                                "O ticket foi modificado por outro usuário. Deseja sobrescrever as alterações deles com as suas?",
+                                "Conflito de Concorrência",
+                                MessageBoxButton.YesNoCancel,
+                                MessageBoxImage.Warning);
+
+                            if (result == MessageBoxResult.Yes)
+                            {
+                                // Sobrescrever: o RowVersion do cliente já está no estado original,
+                                // então basta tentar salvar novamente.
+                                entry.OriginalValues.SetValues(databaseEntry); // Atualiza o RowVersion original para o do banco
+                                // As propriedades do cliente já contêm os novos valores, então não precisamos fazer nada aqui.
+                            }
+                            else if (result == MessageBoxResult.No)
+                            {
+                                // Recarregar: atualiza as propriedades do cliente com os valores do banco de dados
+                                entry.Reload();
+                                MessageBox.Show("As alterações de outro usuário foram recarregadas. Por favor, revise e tente salvar novamente.", "Conflito Resolvido", MessageBoxButton.OK, MessageBoxImage.Information);
+                                DialogResult = false; // Não fecha a janela, permite ao usuário revisar
+                                return;
+                            }
+                            else // Cancelar
+                            {
+                                DialogResult = false; // Não fecha a janela
+                                return;
+                            }
+                        }
+                    }
+                }
+                // Tenta salvar novamente se o usuário escolheu sobrescrever
+                try
+                {
+                    _context.SaveChanges();
+                    DialogResult = true;
+                }
+                catch (Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException)
+                {
+                    MessageBox.Show("Um novo conflito de concorrência ocorreu ao tentar salvar novamente. Por favor, tente novamente.", "Erro de Concorrência", MessageBoxButton.OK, MessageBoxImage.Error);
+                    DialogResult = false;
+                }
+                catch (Exception innerEx)
+                {
+                    MessageBox.Show("Erro ao salvar o ticket após resolução de concorrência: " + innerEx.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+                    DialogResult = false;
+                }
             }
             catch (Exception ex)
             {

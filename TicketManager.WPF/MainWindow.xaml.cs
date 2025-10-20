@@ -21,23 +21,22 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
 {
     private readonly TicketContext _context = new TicketContext();
     private readonly bool _isAdmin;
-    private ObservableCollection<ColumnSetting> _userColumnSettings;
+    private UserColumnSettings _userColumnSettings;
     private string _columnSettingsFilePath;
 
     private void LoadUserColumnSettings()
     {
         _columnSettingsFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "TicketManager", $"{Environment.UserName}_column_settings.json");
 
-        var defaultSettings = UserColumnSettings.GetDefaultSettings().ColumnSettings.ToList();
-        List<ColumnSetting> loadedSettings = null;
+        var defaultUserColumnSettings = UserColumnSettings.GetDefaultSettings();
+        UserColumnSettings loadedUserColumnSettings = null;
 
         if (File.Exists(_columnSettingsFilePath))
         {
             try
             {
                 var jsonString = File.ReadAllText(_columnSettingsFilePath);
-                var settings = JsonSerializer.Deserialize<UserColumnSettings>(jsonString);
-                loadedSettings = settings?.ColumnSettings;
+                loadedUserColumnSettings = JsonSerializer.Deserialize<UserColumnSettings>(jsonString);
             }
             catch (Exception ex)
             {
@@ -45,52 +44,57 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
             }
         }
 
-        // Merge default settings with loaded settings
-        var mergedSettings = new List<ColumnSetting>();
-        var maxDisplayIndex = -1;
+        // Initialize _userColumnSettings with default values
+        _userColumnSettings = defaultUserColumnSettings;
 
-        // Add default settings, preserving loaded visibility/order if available
-        foreach (var defaultSetting in defaultSettings)
+        // Merge loaded settings with default settings
+        if (loadedUserColumnSettings != null)
         {
-            var existingSetting = loadedSettings?.FirstOrDefault(s => s.Name == defaultSetting.Name);
-            if (existingSetting != null)
+            // Update theme from loaded settings
+            _userColumnSettings.Theme = loadedUserColumnSettings.Theme;
+
+            if (loadedUserColumnSettings.ColumnSettings != null)
             {
-                mergedSettings.Add(existingSetting);
-                if (existingSetting.DisplayIndex > maxDisplayIndex)
+                // Update existing settings and add new ones
+                foreach (var loadedSetting in loadedUserColumnSettings.ColumnSettings)
                 {
-                    maxDisplayIndex = existingSetting.DisplayIndex;
+                    var existingSetting = _userColumnSettings.ColumnSettings.FirstOrDefault(s => s.Name == loadedSetting.Name);
+                    if (existingSetting != null)
+                    {
+                        // Update properties from loaded settings
+                        existingSetting.IsVisible = loadedSetting.IsVisible;
+                        existingSetting.DisplayIndex = loadedSetting.DisplayIndex;
+                    }
+                    else
+                    {
+                        // Add new columns from loaded settings that are not in default
+                        _userColumnSettings.ColumnSettings.Add(loadedSetting);
+                    }
                 }
-            }
-            else
-            {
-                // Add new default columns that are not in loaded settings
-                defaultSetting.DisplayIndex = ++maxDisplayIndex;
-                mergedSettings.Add(defaultSetting);
+
+                // Remove columns from _userColumnSettings.ColumnSettings that are not in default settings (if any were removed from defaults)
+                _userColumnSettings.ColumnSettings.RemoveAll(s => !defaultUserColumnSettings.ColumnSettings.Any(ds => ds.Name == s.Name));
             }
         }
 
-        // Add any custom columns from loaded settings that are not in default settings
-        if (loadedSettings != null)
+        // Ensure display indices are unique and sequential after merging
+        var orderedSettings = _userColumnSettings.ColumnSettings.OrderBy(s => s.DisplayIndex).ToList();
+        for (int i = 0; i < orderedSettings.Count; i++)
         {
-            foreach (var loadedSetting in loadedSettings)
-            {
-                if (!mergedSettings.Any(s => s.Name == loadedSetting.Name))
-                {
-                    loadedSetting.DisplayIndex = ++maxDisplayIndex;
-                    mergedSettings.Add(loadedSetting);
-                }
-            }
+            orderedSettings[i].DisplayIndex = i;
         }
-
-        _userColumnSettings = new ObservableCollection<ColumnSetting>(mergedSettings.OrderBy(s => s.DisplayIndex));
+        _userColumnSettings.ColumnSettings = orderedSettings; // Reassign the sorted list
     }
 
     private void SaveUserColumnSettings()
     {
         try
         {
-            var settings = new UserColumnSettings { UserName = Environment.UserName, ColumnSettings = _userColumnSettings.ToList() };
-            var jsonString = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
+            _userColumnSettings.UserName = Environment.UserName;
+            _userColumnSettings.Theme = ThemeManager.Current.DetectTheme(Application.Current)?.Name ?? "Light.Blue"; // Save current theme
+            // ColumnSettings are already updated in _userColumnSettings
+
+            var jsonString = JsonSerializer.Serialize(_userColumnSettings, new JsonSerializerOptions { WriteIndented = true });
             Directory.CreateDirectory(Path.GetDirectoryName(_columnSettingsFilePath));
             File.WriteAllText(_columnSettingsFilePath, jsonString);
         }
@@ -106,6 +110,7 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
         _isAdmin = user.IsAdminBool;
 
         LoadUserColumnSettings(); // Load settings at startup
+        ChangeTheme(_userColumnSettings.Theme); // Apply saved theme
         ApplyColumnSettings();    // Apply settings to the DataGrid
 
         CurrentUserTextBlock.Text = $"Usuário: {user.WindowsUserName}";
@@ -119,7 +124,7 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
         // Clear existing columns if any were auto-generated or previously defined
         TicketsGrid.Columns.Clear();
 
-        foreach (var setting in _userColumnSettings.OrderBy(s => s.DisplayIndex))
+        foreach (var setting in _userColumnSettings.ColumnSettings.OrderBy(s => s.DisplayIndex))
         {
             if (setting.IsVisible)
             {
@@ -350,7 +355,7 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
                     var currentColumn = 1;
 
                     // Cabeçalho dinâmico baseado nas configurações do usuário
-                    foreach (var setting in _userColumnSettings.Where(s => s.IsVisible).OrderBy(s => s.DisplayIndex))
+                    foreach (var setting in _userColumnSettings.ColumnSettings.Where(s => s.IsVisible).OrderBy(s => s.DisplayIndex))
                     {
                         worksheet.Cell(currentRow, currentColumn).Value = setting.Header;
                         currentColumn++;
@@ -370,7 +375,7 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
                             currentColumn = 1;
 
                             // Dados das colunas visíveis e ordenadas
-                            foreach (var setting in _userColumnSettings.Where(s => s.IsVisible).OrderBy(s => s.DisplayIndex))
+                            foreach (var setting in _userColumnSettings.ColumnSettings.Where(s => s.IsVisible).OrderBy(s => s.DisplayIndex))
                             {
                                 var property = typeof(Ticket).GetProperty(setting.Name);
                                 if (property != null)
@@ -506,7 +511,7 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
         {
             contextMenu.Items.Clear();
 
-            foreach (var setting in _userColumnSettings.OrderBy(s => s.DisplayIndex))
+            foreach (var setting in _userColumnSettings.ColumnSettings.OrderBy(s => s.DisplayIndex))
             {
                 var menuItem = new MenuItem
                 {
@@ -528,6 +533,14 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
         if (sender is MenuItem menuItem && menuItem.Tag is ColumnSetting setting)
         {
             setting.IsVisible = menuItem.IsChecked;
+            // Reorder the display indices to ensure consistency
+            var currentSettings = _userColumnSettings.ColumnSettings.OrderBy(s => s.DisplayIndex).ToList();
+            for (int i = 0; i < currentSettings.Count; i++)
+            {
+                currentSettings[i].DisplayIndex = i;
+            }
+            _userColumnSettings.ColumnSettings = currentSettings;
+
             ApplyColumnSettings();
             SaveUserColumnSettings();
         }
@@ -572,6 +585,9 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
         {
             Application.Current.Resources.MergedDictionaries.Insert(index, newColorDictionary);
         }
+
+        // Save the newly selected theme
+        SaveUserColumnSettings();
     }
 
     private void LightThemeMenuItem_Click(object sender, RoutedEventArgs e)

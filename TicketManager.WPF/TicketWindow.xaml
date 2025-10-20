@@ -1,9 +1,10 @@
-<Window x:Class="TicketManager.WPF.TicketWindow"
+<mah:MetroWindow x:Class="TicketManager.WPF.TicketWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TicketManager.WPF.Models"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
         Title="Ticket" Height="576" Width="720"
         WindowStartupLocation="CenterOwner">
@@ -52,4 +53,4 @@
             <Button Name="CancelButton" Content="Cancelar" Width="100" Padding="10,5" IsCancel="True"/>
         </StackPanel>
     </Grid>
-</Window>
+</mah:MetroWindow>

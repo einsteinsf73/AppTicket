@@ -7,6 +7,7 @@ namespace TicketManager.WPF.Models
     public class UserColumnSettings
     {
         public string UserName { get; set; }
+        public string Theme { get; set; } = "Light.Blue"; // Default theme
         public List<ColumnSetting> ColumnSettings { get; set; }
 
         public UserColumnSettings()

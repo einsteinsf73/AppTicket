@@ -2,7 +2,7 @@ using System.Windows;
 
 namespace TicketManager.WPF
 {
-    public partial class SlaConfirmationWindow : Window
+    public partial class SlaConfirmationWindow : MahApps.Metro.Controls.MetroWindow
     {
         public int? FinalSla { get; private set; }
         private readonly int _estimatedSla;

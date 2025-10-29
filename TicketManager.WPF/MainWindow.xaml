@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TicketManager.WPF"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="Ticket-TI" Height="540" Width="960">
+        Title="Ticket-TI" Height="540" Width="1296">
 
     <DockPanel Margin="10">
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
@@ -43,9 +43,9 @@
             <Label Content="Prioridade:" VerticalAlignment="Center" Margin="10,0,5,0"/>
             <ComboBox Name="PriorityFilterComboBox" Width="100" VerticalAlignment="Center"/>
             <Label Content="De:" VerticalAlignment="Center" Margin="10,0,5,0"/>
-            <DatePicker Name="StartDatePicker" Width="120" VerticalAlignment="Center" PreviewKeyDown="DatePicker_PreviewKeyDown"/>
+            <DatePicker Name="StartDatePicker" Width="120" VerticalAlignment="Center" PreviewKeyDown="DatePicker_PreviewKeyDown" Language="pt-BR" SelectedDateFormat="Short"/>
             <Label Content="Até:" VerticalAlignment="Center" Margin="10,0,5,0"/>
-            <DatePicker Name="EndDatePicker" Width="120" VerticalAlignment="Center" PreviewKeyDown="DatePicker_PreviewKeyDown"/>
+            <DatePicker Name="EndDatePicker" Width="120" VerticalAlignment="Center" PreviewKeyDown="DatePicker_PreviewKeyDown" Language="pt-BR" SelectedDateFormat="Short"/>
             <Button Name="FilterButton" Content="Filtrar" Margin="10,0,5,0" Padding="10,2" Click="FilterButton_Click"/>
             <Button Name="ClearFilterButton" Content="Limpar" Padding="10,2" Click="ClearFilterButton_Click"/>
             <Button x:Name="ColumnSettingsButton" Margin="10,0,0,0" Padding="5" Click="ColumnSettingsButton_Click">
@@ -145,9 +145,4 @@
             </DataGrid.Columns>
         </DataGrid>
     </DockPanel>
-    <mah:MetroWindow.Resources>
-        <ContextMenu x:Key="ColumnSettingsContextMenu" x:Name="ColumnSettingsContextMenu">
-            <!-- Menu items will be added dynamically -->
-        </ContextMenu>
-    </mah:MetroWindow.Resources>
 </mah:MetroWindow>

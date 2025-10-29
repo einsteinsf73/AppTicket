@@ -1,0 +1,17 @@
+Para instalar o .NET 8.0 Desktop Runtime via PowerShell, siga os passos abaixo.
+Execute o PowerShell como Administrador para garantir que a instalação ocorra sem problemas de permissão.
+
+# 1. Baixe o script de instalação do .NET
+# Este comando baixa o script oficial da Microsoft para instalar o .NET.
+Invoke-WebRequest -Uri https://dot.net/v1/dotnet-install.ps1 -OutFile .\dotnet-install.ps1
+
+# 2. Desbloqueie o script para permitir a execução
+# O PowerShell pode bloquear scripts baixados da internet por segurança.
+Unblock-File -Path .\dotnet-install.ps1
+
+# 3. Execute o script para instalar o .NET 8.0 SDK
+# O SDK (Software Development Kit) inclui tudo o que é necessário para construir e executar aplicações .NET.
+# O parâmetro '-Channel 8.0' especifica a versão do .NET a ser instalada.
+.\dotnet-install.ps1 -Channel 8.0
+
+# Após a execução, o .NET 8.0 Desktop Runtime estará instalado. Você pode precisar reiniciar o terminal ou o computador para que as alterações tenham efeito.

@@ -29,3 +29,4 @@ appsettings.*.json
 instrucoes_banco_de_dados.txt
 *.lnk
 "TicketManager.WPF - bkp/" 
+/publish

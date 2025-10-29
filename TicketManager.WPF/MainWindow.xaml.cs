@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -13,7 +13,6 @@ using ControlzEx.Theming;
 using System.Windows.Controls;
 using System.IO;
 using System.Text.Json;
-using System.Collections.ObjectModel;
 
 namespace TicketManager.WPF;
 
@@ -24,12 +23,17 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
     private UserColumnSettings _userColumnSettings;
     private string _columnSettingsFilePath;
 
+    private TicketWindow? _ticketWindow;
+    private ViewTicketWindow? _viewTicketWindow;
+    private ReopenReasonWindow? _reopenReasonWindow;
+    private SettingsWindow? _settingsWindow;
+
     private void LoadUserColumnSettings()
     {
         _columnSettingsFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "TicketManager", $"{Environment.UserName}_column_settings.json");
 
         var defaultUserColumnSettings = UserColumnSettings.GetDefaultSettings();
-        UserColumnSettings loadedUserColumnSettings = null;
+        UserColumnSettings? loadedUserColumnSettings = null;
 
         if (File.Exists(_columnSettingsFilePath))
         {
@@ -44,46 +48,38 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
             }
         }
 
-        // Initialize _userColumnSettings with default values
         _userColumnSettings = defaultUserColumnSettings;
 
-        // Merge loaded settings with default settings
         if (loadedUserColumnSettings != null)
         {
-            // Update theme from loaded settings
             _userColumnSettings.Theme = loadedUserColumnSettings.Theme;
 
             if (loadedUserColumnSettings.ColumnSettings != null)
             {
-                // Update existing settings and add new ones
                 foreach (var loadedSetting in loadedUserColumnSettings.ColumnSettings)
                 {
                     var existingSetting = _userColumnSettings.ColumnSettings.FirstOrDefault(s => s.Name == loadedSetting.Name);
                     if (existingSetting != null)
                     {
-                        // Update properties from loaded settings
                         existingSetting.IsVisible = loadedSetting.IsVisible;
                         existingSetting.DisplayIndex = loadedSetting.DisplayIndex;
                     }
                     else
                     {
-                        // Add new columns from loaded settings that are not in default
                         _userColumnSettings.ColumnSettings.Add(loadedSetting);
                     }
                 }
 
-                // Remove columns from _userColumnSettings.ColumnSettings that are not in default settings (if any were removed from defaults)
                 _userColumnSettings.ColumnSettings.RemoveAll(s => !defaultUserColumnSettings.ColumnSettings.Any(ds => ds.Name == s.Name));
             }
         }
 
-        // Ensure display indices are unique and sequential after merging
         var orderedSettings = _userColumnSettings.ColumnSettings.OrderBy(s => s.DisplayIndex).ToList();
         for (int i = 0; i < orderedSettings.Count; i++)
         {
             orderedSettings[i].DisplayIndex = i;
         }
-        _userColumnSettings.ColumnSettings = orderedSettings; // Reassign the sorted list
+        _userColumnSettings.ColumnSettings = orderedSettings;
     }
 
     private void SaveUserColumnSettings()
@@ -91,11 +87,10 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
         try
         {
             _userColumnSettings.UserName = Environment.UserName;
-            _userColumnSettings.Theme = ThemeManager.Current.DetectTheme(Application.Current)?.Name ?? "Light.Blue"; // Save current theme
-            // ColumnSettings are already updated in _userColumnSettings
+            _userColumnSettings.Theme = ThemeManager.Current.DetectTheme(Application.Current)?.Name ?? "Light.Blue";
 
             var jsonString = JsonSerializer.Serialize(_userColumnSettings, new JsonSerializerOptions { WriteIndented = true });
-            Directory.CreateDirectory(Path.GetDirectoryName(_columnSettingsFilePath));
+            Directory.CreateDirectory(Path.GetDirectoryName(_columnSettingsFilePath)!);
             File.WriteAllText(_columnSettingsFilePath, jsonString);
         }
         catch (Exception ex)
@@ -109,9 +104,9 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
         InitializeComponent();
         _isAdmin = user.IsAdminBool;
 
-        LoadUserColumnSettings(); // Load settings at startup
-        ChangeTheme(_userColumnSettings.Theme); // Apply saved theme
-        ApplyColumnSettings();    // Apply settings to the DataGrid
+        LoadUserColumnSettings();
+        ChangeTheme(_userColumnSettings.Theme);
+        ApplyColumnSettings();
 
         CurrentUserTextBlock.Text = $"Usuário: {user.WindowsUserName}";
         InitializeFilters();
@@ -121,19 +116,17 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
 
     private void ApplyColumnSettings()
     {
-        // Clear existing columns if any were auto-generated or previously defined
         TicketsGrid.Columns.Clear();
 
         foreach (var setting in _userColumnSettings.ColumnSettings.OrderBy(s => s.DisplayIndex))
         {
             if (setting.IsVisible)
             {
-                // Recreate DataGridTextColumn based on saved settings
                 var column = new DataGridTextColumn
                 {
                     Header = setting.Header,
                     Binding = new System.Windows.Data.Binding(setting.Name),
-                    Width = new DataGridLength(1, DataGridLengthUnitType.Auto) // Default width, can be made configurable
+                    Width = new DataGridLength(1, DataGridLengthUnitType.Auto)
                 };
                 TicketsGrid.Columns.Add(column);
             }
@@ -142,16 +135,14 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
 
     private void InitializeFilters()
     {
-        // Popula Status
         var statusOptions = new List<string> { "Todos", "Todos Abertos", "Aberto", "EmAndamento", "Resolvido", "Fechado" };
         StatusFilterComboBox.ItemsSource = statusOptions;
-        StatusFilterComboBox.SelectedIndex = 1; // Padrão: "Todos Abertos"
+        StatusFilterComboBox.SelectedIndex = 1;
 
-        // Popula Prioridade
         var priorityOptions = new List<string> { "Todas" };
         priorityOptions.AddRange(Enum.GetNames(typeof(TicketPriority)));
         PriorityFilterComboBox.ItemsSource = priorityOptions;
-        PriorityFilterComboBox.SelectedIndex = 0; // Padrão: "Todas"
+        PriorityFilterComboBox.SelectedIndex = 0;
     }
 
     private void LoadTickets()
@@ -160,7 +151,6 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
         {
             var query = _context.Tickets.AsQueryable();
 
-            // Aplica filtro de Status
             if (StatusFilterComboBox.SelectedItem is string statusFilter && statusFilter != "Todos")
             {
                 if (statusFilter == "Todos Abertos")
@@ -174,7 +164,6 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
                 }
             }
 
-            // Aplica filtro de Prioridade
             if (PriorityFilterComboBox.SelectedItem is string priorityFilter && priorityFilter != "Todas")
             {
                 if (Enum.TryParse<TicketPriority>(priorityFilter, out var priority))
@@ -183,7 +172,6 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
                 }
             }
 
-            // Aplica filtro de Data de Criação
             if (StartDatePicker.SelectedDate.HasValue)
             {
                 query = query.Where(t => t.CreatedAt.Date >= StartDatePicker.SelectedDate.Value.Date);
@@ -194,7 +182,12 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
                 query = query.Where(t => t.CreatedAt.Date <= EndDatePicker.SelectedDate.Value.Date);
             }
 
-            TicketsGrid.ItemsSource = query.ToList();
+            TicketsGrid.ItemsSource = query
+                .AsEnumerable() // Bring to memory for custom ordering
+                .OrderBy(t => t.Priority == TicketPriority.Alta ? 0 :
+                              t.Priority == TicketPriority.Media ? 1 : 2) // Custom order for priorities
+                .ThenBy(t => t.CreatedAt) // Order by oldest first within each priority
+                .ToList();
         }
         catch (Exception ex)
         {
@@ -236,10 +229,16 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
 
     private void NewTicketButton_Click(object sender, RoutedEventArgs e)
     {
-        var ticketWindow = new TicketWindow(_context);
-        if (ticketWindow.ShowDialog() == true)
+        if (_ticketWindow == null)
         {
-            LoadTickets();
+            _ticketWindow = new TicketWindow(_context, null, LoadTickets);
+            _ticketWindow.Owner = this;
+            _ticketWindow.Closed += (s, args) => _ticketWindow = null;
+            _ticketWindow.Show();
+        }
+        else
+        {
+            _ticketWindow.Activate();
         }
     }
 
@@ -247,10 +246,16 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
     {
         if (TicketsGrid.SelectedItem is Ticket selectedTicket)
         {
-            var ticketWindow = new TicketWindow(_context, selectedTicket);
-            if (ticketWindow.ShowDialog() == true)
+            if (_ticketWindow == null)
             {
-                LoadTickets();
+                _ticketWindow = new TicketWindow(_context, selectedTicket, LoadTickets);
+                _ticketWindow.Owner = this;
+                _ticketWindow.Closed += (s, args) => _ticketWindow = null;
+                _ticketWindow.Show();
+            }
+            else
+            {
+                _ticketWindow.Activate();
             }
         }
         else
@@ -263,26 +268,34 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
     {
         if (TicketsGrid.SelectedItem is Ticket selectedTicket)
         {
-            try
+            if (_viewTicketWindow == null)
             {
-                // Carrega o ticket com seu histórico de reaberturas
-                var ticketWithHistory = _context.Tickets
-                    .Include(t => t.ReopeningLogs)
-                    .FirstOrDefault(t => t.Id == selectedTicket.Id);
+                try
+                {
+                    var ticketWithHistory = _context.Tickets
+                        .Include(t => t.ReopeningLogs)
+                        .FirstOrDefault(t => t.Id == selectedTicket.Id);
 
-                if (ticketWithHistory != null)
-                {
-                    var viewWindow = new ViewTicketWindow(ticketWithHistory);
-                    viewWindow.ShowDialog();
+                    if (ticketWithHistory != null)
+                    {
+                        _viewTicketWindow = new ViewTicketWindow(ticketWithHistory);
+                        _viewTicketWindow.Owner = this;
+                        _viewTicketWindow.Closed += (s, args) => _viewTicketWindow = null;
+                        _viewTicketWindow.Show();
+                    }
+                    else
+                    {
+                        MessageBox.Show("O ticket selecionado não foi encontrado no banco de dados.", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    MessageBox.Show("O ticket selecionado não foi encontrado no banco de dados.", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Erro ao carregar os detalhes do ticket: " + ex.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show("Erro ao carregar os detalhes do ticket: " + ex.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+                _viewTicketWindow.Activate();
             }
         }
         else
@@ -300,7 +313,6 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
             {
                 try
                 {
-                    // Cria a entrada de log
                     var logEntry = new TicketLog
                     {
                         OriginalTicketId = selectedTicket.Id,
@@ -354,19 +366,15 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
                     var currentRow = 1;
                     var currentColumn = 1;
 
-                    // Cabeçalho dinâmico baseado nas configurações do usuário
                     foreach (var setting in _userColumnSettings.ColumnSettings.Where(s => s.IsVisible).OrderBy(s => s.DisplayIndex))
                     {
                         worksheet.Cell(currentRow, currentColumn).Value = setting.Header;
                         currentColumn++;
                     }
 
-                    // Adicionar cabeçalhos para dados relacionados
                     worksheet.Cell(currentRow, currentColumn++).Value = "Histórico de Reaberturas";
                     worksheet.Cell(currentRow, currentColumn++).Value = "Histórico de Logs";
 
-
-                    // Dados (usa a lista que já está na grade, que já está filtrada)
                     if (TicketsGrid.ItemsSource is IEnumerable<Ticket> tickets)
                     {
                         foreach (var ticket in tickets)
@@ -374,7 +382,6 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
                             currentRow++;
                             currentColumn = 1;
 
-                            // Dados das colunas visíveis e ordenadas
                             foreach (var setting in _userColumnSettings.ColumnSettings.Where(s => s.IsVisible).OrderBy(s => s.DisplayIndex))
                             {
                                 var property = typeof(Ticket).GetProperty(setting.Name);
@@ -385,12 +392,10 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
                                 currentColumn++;
                             }
 
-                            // Incluir histórico de reaberturas
                             var reopeningLogs = _context.ReopeningLogs.Where(rl => rl.TicketId == ticket.Id).ToList();
                             var reopeningHistory = string.Join("; ", reopeningLogs.Select(rl => $"{rl.ReopenedAt:dd/MM/yyyy HH:mm} por {rl.ReopenedBy}: {rl.Reason}"));
                             worksheet.Cell(currentRow, currentColumn++).Value = reopeningHistory;
 
-                            // Incluir histórico de logs (ex: exclusões)
                             var ticketLogs = _context.TicketLogs.Where(tl => tl.OriginalTicketId == ticket.Id).ToList();
                             var logsHistory = string.Join("; ", ticketLogs.Select(tl => $"{tl.DeletionTimestamp:dd/MM/yyyy HH:mm} por {tl.DeletedByWindowsUser} (Exclusão)"));
                             worksheet.Cell(currentRow, currentColumn++).Value = logsHistory;
@@ -426,7 +431,7 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
 
         if (TicketsGrid.SelectedItem is Ticket selectedTicket)
         {
-            ViewTicketButton.IsEnabled = true; // Botão Visualizar sempre ativo se algo estiver selecionado
+            ViewTicketButton.IsEnabled = true;
 
             if (selectedTicket.Status == TicketStatus.Fechado || selectedTicket.Status == TicketStatus.Resolvido)
             {
@@ -449,11 +454,16 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
             }
             else
             {
-                // Abrir modo de edição para tickets não fechados
-                var ticketWindow = new TicketWindow(_context, selectedTicket);
-                if (ticketWindow.ShowDialog() == true)
+                if (_ticketWindow == null)
                 {
-                    LoadTickets();
+                    _ticketWindow = new TicketWindow(_context, selectedTicket, LoadTickets);
+                    _ticketWindow.Owner = this;
+                    _ticketWindow.Closed += (s, args) => _ticketWindow = null;
+                    _ticketWindow.Show();
+                }
+                else
+                {
+                    _ticketWindow.Activate();
                 }
             }
         }
@@ -469,63 +479,98 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
             return;
         }
 
-        var reasonWindow = new ReopenReasonWindow();
-        if (reasonWindow.ShowDialog() == true)
+        if (_reopenReasonWindow == null)
         {
-            try
+            _reopenReasonWindow = new ReopenReasonWindow();
+            _reopenReasonWindow.Owner = this;
+            _reopenReasonWindow.Closed += (s, args) =>
             {
-                // Criar o log de reabertura
-                var reopeningLog = new ReopeningLog
+                if (_reopenReasonWindow.IsConfirmed)
                 {
-                    TicketId = ticket.Id,
-                    ReopenedAt = DateTime.Now,
-                    ReopenedBy = Environment.UserName,
-                    Reason = reasonWindow.Reason
-                };
-                _context.ReopeningLogs.Add(reopeningLog);
+                    try
+                    {
+                        var reopeningLog = new ReopeningLog
+                        {
+                            TicketId = ticket.Id,
+                            ReopenedAt = DateTime.Now,
+                            ReopenedBy = Environment.UserName,
+                            Reason = _reopenReasonWindow.Reason
+                        };
+                        _context.ReopeningLogs.Add(reopeningLog);
 
-                // Atualizar o ticket
-                ticket.Status = TicketStatus.Aberto;
-                ticket.UpdatedAt = DateTime.Now;
-                
-                _context.SaveChanges();
-                LoadTickets();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Erro ao reabrir o ticket: " + ex.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+                        ticket.Status = TicketStatus.Aberto;
+                        ticket.UpdatedAt = DateTime.Now;
+                        
+                        _context.SaveChanges();
+                        LoadTickets();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Erro ao reabrir o ticket: " + ex.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+                _reopenReasonWindow = null;
+            };
+            _reopenReasonWindow.Show();
+        }
+        else
+        {
+            _reopenReasonWindow.Activate();
         }
     }
 
     private void SettingsButton_Click(object sender, RoutedEventArgs e)
     {
-        var settingsWindow = new SettingsWindow(_context);
-        settingsWindow.ShowDialog();
+        if (_settingsWindow == null)
+        {
+            _settingsWindow = new SettingsWindow(_context);
+            _settingsWindow.Owner = this;
+            _settingsWindow.Closed += (s, args) => _settingsWindow = null;
+            _settingsWindow.Show();
+        }
+        else
+        {
+            _settingsWindow.Activate();
+        }
+    }
+
+    private void OpenColumnConfigurationWindow()
+    {
+        var columnConfigurationWindow = new ColumnConfigurationWindow(new System.Collections.ObjectModel.ObservableCollection<ColumnSetting>(_userColumnSettings.ColumnSettings));
+        columnConfigurationWindow.Owner = this;
+        if (columnConfigurationWindow.ShowDialog() == true)
+        {
+            _userColumnSettings.ColumnSettings = new System.Collections.Generic.List<ColumnSetting>(columnConfigurationWindow.ColumnSettings);
+            ApplyColumnSettings();
+            SaveUserColumnSettings();
+        }
     }
 
     private void ColumnSettingsButton_Click(object sender, RoutedEventArgs e)
     {
-        var contextMenu = this.FindResource("ColumnSettingsContextMenu") as ContextMenu;
-        if (contextMenu != null)
+        var contextMenu = new ContextMenu();
+
+        var configureItem = new MenuItem { Header = "Configurar Colunas" };
+        configureItem.Click += (s, args) => OpenColumnConfigurationWindow();
+        contextMenu.Items.Add(configureItem);
+
+        contextMenu.Items.Add(new Separator());
+
+        foreach (var setting in _userColumnSettings.ColumnSettings.OrderBy(s => s.DisplayIndex))
         {
-            contextMenu.Items.Clear();
-
-            foreach (var setting in _userColumnSettings.ColumnSettings.OrderBy(s => s.DisplayIndex))
+            var menuItem = new MenuItem
             {
-                var menuItem = new MenuItem
-                {
-                    Header = setting.Header,
-                    IsCheckable = true,
-                    IsChecked = setting.IsVisible,
-                    Tag = setting // Store the ColumnSetting object in the Tag
-                };
-                menuItem.Click += ColumnMenuItem_Click;
-                contextMenu.Items.Add(menuItem);
-            }
-
-            contextMenu.IsOpen = true;
+                Header = setting.Header,
+                IsCheckable = true,
+                IsChecked = setting.IsVisible,
+                Tag = setting
+            };
+            menuItem.Click += ColumnMenuItem_Click;
+            contextMenu.Items.Add(menuItem);
         }
+
+        contextMenu.PlacementTarget = sender as UIElement;
+        contextMenu.IsOpen = true;
     }
 
     private void ColumnMenuItem_Click(object sender, RoutedEventArgs e)
@@ -533,20 +578,10 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
         if (sender is MenuItem menuItem && menuItem.Tag is ColumnSetting setting)
         {
             setting.IsVisible = menuItem.IsChecked;
-            // Reorder the display indices to ensure consistency
-            var currentSettings = _userColumnSettings.ColumnSettings.OrderBy(s => s.DisplayIndex).ToList();
-            for (int i = 0; i < currentSettings.Count; i++)
-            {
-                currentSettings[i].DisplayIndex = i;
-            }
-            _userColumnSettings.ColumnSettings = currentSettings;
-
             ApplyColumnSettings();
             SaveUserColumnSettings();
         }
     }
-
-
 
     private void SetButtonVisibility()
     {
@@ -586,7 +621,6 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
             Application.Current.Resources.MergedDictionaries.Insert(index, newColorDictionary);
         }
 
-        // Save the newly selected theme
         SaveUserColumnSettings();
     }
 

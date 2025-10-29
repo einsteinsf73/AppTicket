@@ -5,6 +5,7 @@ namespace TicketManager.WPF
     public partial class ReopenReasonWindow : MahApps.Metro.Controls.MetroWindow
     {
         public string Reason { get; private set; } = string.Empty;
+        public bool IsConfirmed { get; private set; } = false;
 
         public ReopenReasonWindow()
         {
@@ -20,12 +21,14 @@ namespace TicketManager.WPF
             }
 
             Reason = ReasonTextBox.Text;
-            DialogResult = true;
+            IsConfirmed = true;
+            this.Close();
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-            DialogResult = false;
+            IsConfirmed = false;
+            this.Close();
         }
     }
 }

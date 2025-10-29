@@ -2,10 +2,11 @@ using System.Linq;
 using System.Windows;
 using TicketManager.WPF.Data;
 using TicketManager.WPF.Models;
+using MahApps.Metro.Controls;
 
 namespace TicketManager.WPF
 {
-    public partial class SettingsWindow : Window
+    public partial class SettingsWindow : MetroWindow
     {
         private readonly TicketContext _context;
 
@@ -51,7 +52,7 @@ namespace TicketManager.WPF
             if (UsersGrid.SelectedItem is AuthorizedUser selectedUser)
             {
                 // Impede a exclusão do próprio usuário se for o único na lista
-                if (_context.AuthorizedUsers.Count() <= 1 && selectedUser.WindowsUserName.Equals(Environment.UserName, StringComparison.OrdinalIgnoreCase))
+                if (_context.AuthorizedUsers.Count() <= 1 && selectedUser.WindowsUserName.Equals(System.Environment.UserName, System.StringComparison.OrdinalIgnoreCase))
                 {
                     MessageBox.Show("Você não pode remover a si mesmo se for o único usuário autorizado.", "Operação Inválida", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;

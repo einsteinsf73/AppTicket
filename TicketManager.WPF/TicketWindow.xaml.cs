@@ -13,11 +13,13 @@ namespace TicketManager.WPF
         private readonly TicketContext _context;
         private Ticket _ticket;
         private readonly TicketStatus _originalStatus;
+        private readonly Action? _onSave;
 
-        public TicketWindow(TicketContext context, Ticket? ticket = null)
+        public TicketWindow(TicketContext context, Ticket? ticket = null, Action? onSave = null)
         {
             InitializeComponent();
             _context = context;
+            _onSave = onSave;
 
             StatusComboBox.ItemsSource = Enum.GetValues(typeof(TicketStatus));
             PriorityComboBox.ItemsSource = Enum.GetValues(typeof(TicketPriority));
@@ -28,13 +30,13 @@ namespace TicketManager.WPF
                 Title = "Novo Ticket";
                 StatusComboBox.SelectedItem = TicketStatus.Aberto;
                 PriorityComboBox.SelectedItem = TicketPriority.Media;
-                _originalStatus = _ticket.Status; // Status inicial para um novo ticket
-                SlaFinalTextBox.IsEnabled = false; // Desabilita na criação
+                _originalStatus = _ticket.Status;
+                SlaFinalTextBox.IsEnabled = false;
             }
             else
             {
                 _ticket = ticket;
-                _originalStatus = _ticket.Status; // Armazena o status original
+                _originalStatus = _ticket.Status;
 
                 Title = "Editar Ticket";
                 TitleTextBox.Text = _ticket.Title;
@@ -44,18 +46,15 @@ namespace TicketManager.WPF
                 SlaTextBox.Text = _ticket.SlaMinutes.ToString();
                 SlaFinalTextBox.Text = _ticket.SLAFinal?.ToString() ?? string.Empty;
 
-                // Protege o campo SLA (min) e ajusta o rótulo
                 SlaLabel.Content = "SLA (min est.)";
                 SlaTextBox.IsEnabled = false;
 
-                // Habilita a edição do SLA Final apenas se um valor já foi definido anteriormente (em caso de reabertura)
                 SlaFinalTextBox.IsEnabled = _ticket.SLAFinal.HasValue;
             }
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            // Validação do SLA inicial apenas para novos tickets
             if (_ticket.Id == 0)
             {
                 if (!int.TryParse(SlaTextBox.Text, out int slaMinutes) || slaMinutes <= 0)
@@ -66,14 +65,12 @@ namespace TicketManager.WPF
                 _ticket.SlaMinutes = slaMinutes;
             }
 
-            // Atualiza o objeto _ticket com os dados do formulário
             _ticket.Title = TitleTextBox.Text;
             _ticket.Description = DescriptionTextBox.Text;
             _ticket.Status = (TicketStatus)StatusComboBox.SelectedItem;
             _ticket.Priority = (TicketPriority)PriorityComboBox.SelectedItem;
             _ticket.UpdatedAt = DateTime.Now;
 
-            // Atualiza o SLA Final a partir do campo de texto, se estiver habilitado
             if (SlaFinalTextBox.IsEnabled)
             {
                 if (int.TryParse(SlaFinalTextBox.Text, out int slaFinalValue))
@@ -98,14 +95,14 @@ namespace TicketManager.WPF
             try
             {
                 _context.SaveChanges();
-                DialogResult = true; // Fecha a janela e indica sucesso
+                this.Close();
+                _onSave?.Invoke();
             }
             catch (Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException ex)
             {
-                // Um conflito de concorrência ocorreu
                 foreach (var entry in ex.Entries)
                 {
-                    if (entry.Entity is Ticket ticket)
+                    if (entry.Entity is Ticket)
                     {
                         var databaseEntry = entry.GetDatabaseValues();
                         if (databaseEntry == null)
@@ -114,9 +111,6 @@ namespace TicketManager.WPF
                         }
                         else
                         {
-                            var databaseTicket = (Ticket)databaseEntry.ToObject();
-
-                            // Oferecer ao usuário a opção de sobrescrever ou recarregar
                             var result = MessageBox.Show(
                                 "O ticket foi modificado por outro usuário. Deseja sobrescrever as alterações deles com as suas?",
                                 "Conflito de Concorrência",
@@ -125,42 +119,30 @@ namespace TicketManager.WPF
 
                             if (result == MessageBoxResult.Yes)
                             {
-                                // Sobrescrever: o RowVersion do cliente já está no estado original,
-                                // então basta tentar salvar novamente.
-                                entry.OriginalValues.SetValues(databaseEntry); // Atualiza o RowVersion original para o do banco
-                                // As propriedades do cliente já contêm os novos valores, então não precisamos fazer nada aqui.
+                                entry.OriginalValues.SetValues(databaseEntry);
                             }
                             else if (result == MessageBoxResult.No)
                             {
-                                // Recarregar: atualiza as propriedades do cliente com os valores do banco de dados
                                 entry.Reload();
                                 MessageBox.Show("As alterações de outro usuário foram recarregadas. Por favor, revise e tente salvar novamente.", "Conflito Resolvido", MessageBoxButton.OK, MessageBoxImage.Information);
-                                DialogResult = false; // Não fecha a janela, permite ao usuário revisar
                                 return;
                             }
-                            else // Cancelar
+                            else
                             {
-                                DialogResult = false; // Não fecha a janela
                                 return;
                             }
                         }
                     }
                 }
-                // Tenta salvar novamente se o usuário escolheu sobrescrever
                 try
                 {
                     _context.SaveChanges();
-                    DialogResult = true;
-                }
-                catch (Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException)
-                {
-                    MessageBox.Show("Um novo conflito de concorrência ocorreu ao tentar salvar novamente. Por favor, tente novamente.", "Erro de Concorrência", MessageBoxButton.OK, MessageBoxImage.Error);
-                    DialogResult = false;
+                    this.Close();
+                    _onSave?.Invoke();
                 }
                 catch (Exception innerEx)
                 {
                     MessageBox.Show("Erro ao salvar o ticket após resolução de concorrência: " + innerEx.Message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
-                    DialogResult = false;
                 }
             }
             catch (Exception ex)
@@ -171,13 +153,9 @@ namespace TicketManager.WPF
 
         private void StatusComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Garante que a lógica não rode na inicialização da janela
-            if (e.RemovedItems.Count == 0)
-                return;
+            if (e.RemovedItems.Count == 0) return;
 
             var newStatus = (TicketStatus)StatusComboBox.SelectedItem;
-            
-            // Acessa o status anterior através do primeiro item removido da seleção
             var previousStatus = (TicketStatus)e.RemovedItems[0]!;
 
             bool isClosingOrResolving = (newStatus == TicketStatus.Fechado || newStatus == TicketStatus.Resolvido);
@@ -185,16 +163,15 @@ namespace TicketManager.WPF
 
             if (isClosingOrResolving && !wasAlreadyClosedOrResolved)
             {
-                var slaConfirmationDialog = new SlaConfirmationWindow(_ticket.SlaMinutes);
+                var slaConfirmationDialog = new SlaConfirmationWindow(_ticket.SlaMinutes, _ticket.Id == 0 ? DateTime.Now : _ticket.CreatedAt);
+                slaConfirmationDialog.Owner = this;
                 if (slaConfirmationDialog.ShowDialog() == true)
                 {
-                    // Atualiza o campo de texto e habilita para edição se necessário
                     SlaFinalTextBox.Text = slaConfirmationDialog.FinalSla?.ToString() ?? string.Empty;
                     SlaFinalTextBox.IsEnabled = true;
                 }
                 else
                 {
-                    // Se o usuário cancelar o popup, reverte a mudança de status
                     StatusComboBox.SelectedItem = previousStatus;
                 }
             }
@@ -210,6 +187,11 @@ namespace TicketManager.WPF
                     e.Handled = true;
                 }
             }
+        }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

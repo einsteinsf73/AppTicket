@@ -10,4 +10,11 @@
     <SolidColorBrush x:Key="Ticket.Status.Alta.Foreground" Color="#36454F" />
     <SolidColorBrush x:Key="Ticket.Status.Baixa.Foreground" Color="#36454F" />
 
+    <!-- General Foreground Colors for Dark Theme -->
+    <SolidColorBrush x:Key="MahApps.Brushes.Text" Color="White" />
+    <SolidColorBrush x:Key="MahApps.Brushes.IdealForeground" Color="White" />
+    <SolidColorBrush x:Key="MahApps.Brushes.ThemeForeground" Color="White" />
+    <SolidColorBrush x:Key="MahApps.Brushes.WindowTitle.Foreground" Color="White" />
+    <SolidColorBrush x:Key="MahApps.Brushes.Button.Foreground" Color="White" />
+
 </ResourceDictionary>

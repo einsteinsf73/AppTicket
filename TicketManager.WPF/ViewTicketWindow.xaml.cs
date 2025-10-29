@@ -1,9 +1,10 @@
 using System.Windows;
 using TicketManager.WPF.Models;
+using MahApps.Metro.Controls;
 
 namespace TicketManager.WPF
 {
-    public partial class ViewTicketWindow : Window
+    public partial class ViewTicketWindow : MetroWindow
     {
         public ViewTicketWindow(Ticket ticket)
         {

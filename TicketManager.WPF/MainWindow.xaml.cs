@@ -19,6 +19,7 @@ namespace TicketManager.WPF;
 public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
 {
     private readonly TicketContext _context = new TicketContext();
+    private readonly AuthorizedUser _user;
     private readonly bool _isAdmin;
     private UserColumnSettings _userColumnSettings;
     private string _columnSettingsFilePath;
@@ -102,6 +103,7 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
     public MainWindow(AuthorizedUser user)
     {
         InitializeComponent();
+        _user = user;
         _isAdmin = user.IsAdminBool;
 
         LoadUserColumnSettings();
@@ -113,7 +115,6 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
         LoadTickets();
         SetButtonVisibility();
     }
-
     private void ApplyColumnSettings()
     {
         TicketsGrid.Columns.Clear();
@@ -517,6 +518,13 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
         {
             _reopenReasonWindow.Activate();
         }
+    }
+
+    private void HomeButton_Click(object sender, RoutedEventArgs e)
+    {
+        var initialScreen = new InitialScreen(_user);
+        initialScreen.Show();
+        this.Close();
     }
 
     private void SettingsButton_Click(object sender, RoutedEventArgs e)

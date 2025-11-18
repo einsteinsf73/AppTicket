@@ -15,7 +15,7 @@ namespace TicketManager.WPF.Migrations
                 table: "TICKETS",
                 type: "RAW(8)",
                 rowVersion: true,
-                nullable: false,
+                nullable: true,
                 defaultValue: new byte[0]);
         }
 

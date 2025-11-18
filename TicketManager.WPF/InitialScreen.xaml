@@ -1,0 +1,27 @@
+<mah:MetroWindow x:Class="TicketManager.WPF.InitialScreen"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TicketManager.WPF"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        mc:Ignorable="d"
+        Title="Bem-vindo" Height="450" Width="800"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Button x:Name="TicketButton" Content="Ticket" Grid.Column="0" Margin="20" Click="TicketButton_Click"/>
+        <Button x:Name="AssetControlButton" Content="Controle de Patrimônio" Grid.Column="1" Margin="20" Click="AssetControlButton_Click"/>
+
+        <mah:DropDownButton Content="Estilo" Padding="10,5" Margin="5,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Right" Grid.Column="1">
+            <mah:DropDownButton.Items>
+                <MenuItem Header="Claro" Click="LightThemeMenuItem_Click"/>
+                <MenuItem Header="Escuro" Click="DarkThemeMenuItem_Click"/>
+            </mah:DropDownButton.Items>
+        </mah:DropDownButton>
+    </Grid>
+</mah:MetroWindow>

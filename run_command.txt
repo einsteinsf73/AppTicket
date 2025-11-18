@@ -1,0 +1,1 @@
+U:\T.I\Software Ticket\TicketManager.WPF\bin\Debug\net8.0-windows\TicketManager.WPF.exe > output.txt 2>&1

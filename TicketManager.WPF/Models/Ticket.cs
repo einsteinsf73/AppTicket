@@ -41,7 +41,7 @@ namespace TicketManager.WPF.Models
         public int? SLAFinal { get; set; }
 
         [Timestamp]
-        public byte[] RowVersion { get; set; }
+        public byte[]? RowVersion { get; set; }
 
         public virtual ICollection<ReopeningLog> ReopeningLogs { get; set; } = new List<ReopeningLog>();
     }

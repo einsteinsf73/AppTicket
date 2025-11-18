@@ -527,21 +527,6 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
         this.Close();
     }
 
-    private void SettingsButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (_settingsWindow == null)
-        {
-            _settingsWindow = new SettingsWindow(_context);
-            _settingsWindow.Owner = this;
-            _settingsWindow.Closed += (s, args) => _settingsWindow = null;
-            _settingsWindow.Show();
-        }
-        else
-        {
-            _settingsWindow.Activate();
-        }
-    }
-
     private void OpenColumnConfigurationWindow()
     {
         var columnConfigurationWindow = new ColumnConfigurationWindow(new System.Collections.ObjectModel.ObservableCollection<ColumnSetting>(_userColumnSettings.ColumnSettings));

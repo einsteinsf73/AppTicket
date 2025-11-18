@@ -13,6 +13,7 @@ namespace TicketManager.WPF
         private readonly AuthorizedUser _user;
         private UserColumnSettings _userColumnSettings;
         private string _columnSettingsFilePath;
+        private SettingsWindow? _settingsWindow;
 
         public InitialScreen(AuthorizedUser user)
         {
@@ -20,6 +21,14 @@ namespace TicketManager.WPF
             _user = user;
             LoadUserColumnSettings();
             ChangeTheme(_userColumnSettings.Theme);
+
+            TicketButton.IsEnabled = _user.HasTicketAccessBool;
+            AssetControlButton.IsEnabled = _user.HasAssetAccessBool;
+
+            if (_user.IsAdminBool)
+            {
+                SettingsButton.Visibility = Visibility.Visible;
+            }
         }
 
         private void TicketButton_Click(object sender, RoutedEventArgs e)
@@ -34,6 +43,21 @@ namespace TicketManager.WPF
             var assetControlWindow = new AssetControlWindow(_user);
             assetControlWindow.Show();
             this.Close();
+        }
+
+        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_settingsWindow == null)
+            {
+                _settingsWindow = new SettingsWindow(new TicketContext());
+                _settingsWindow.Owner = this;
+                _settingsWindow.Closed += (s, args) => _settingsWindow = null;
+                _settingsWindow.Show();
+            }
+            else
+            {
+                _settingsWindow.Activate();
+            }
         }
 
         private void LightThemeMenuItem_Click(object sender, RoutedEventArgs e)

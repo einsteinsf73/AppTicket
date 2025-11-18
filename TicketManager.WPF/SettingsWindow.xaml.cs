@@ -38,12 +38,20 @@ namespace TicketManager.WPF
                 return;
             }
 
-            var newUser = new AuthorizedUser { WindowsUserName = newUserName, IsAdminBool = IsAdminCheckBox.IsChecked == true };
+            var newUser = new AuthorizedUser 
+            { 
+                WindowsUserName = newUserName, 
+                IsAdminBool = IsAdminCheckBox.IsChecked == true,
+                HasTicketAccessBool = HasTicketAccessCheckBox.IsChecked == true,
+                HasAssetAccessBool = HasAssetAccessCheckBox.IsChecked == true
+            };
             _context.AuthorizedUsers.Add(newUser);
             _context.SaveChanges();
 
             NewUserTextBox.Clear();
-            IsAdminCheckBox.IsChecked = false; // Reseta a checkbox
+            IsAdminCheckBox.IsChecked = false;
+            HasTicketAccessCheckBox.IsChecked = false;
+            HasAssetAccessCheckBox.IsChecked = false;
             LoadAuthorizedUsers(); // Recarrega a grade
         }
 

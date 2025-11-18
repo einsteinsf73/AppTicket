@@ -21,6 +21,8 @@
                 <DataGridTextColumn Header="Nome de Usuário (Windows)" Binding="{Binding WindowsUserName}" Width="*" IsReadOnly="True"/>
                 <DataGridCheckBoxColumn Header="Inativo" Binding="{Binding IsInactiveBool}" Width="Auto"/>
                 <DataGridCheckBoxColumn Header="Admin" Binding="{Binding IsAdminBool}" Width="Auto"/>
+                <DataGridCheckBoxColumn Header="Acesso Tickets" Binding="{Binding HasTicketAccessBool}" Width="Auto"/>
+                <DataGridCheckBoxColumn Header="Acesso Patrimônio" Binding="{Binding HasAssetAccessBool}" Width="Auto"/>
             </DataGrid.Columns>
         </DataGrid>
 
@@ -29,6 +31,8 @@
             <StackPanel Orientation="Horizontal">
                 <TextBox x:Name="NewUserTextBox" Width="180" VerticalContentAlignment="Center"/>
                 <CheckBox x:Name="IsAdminCheckBox" Content="Administrador" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                <CheckBox x:Name="HasTicketAccessCheckBox" Content="Acesso Tickets" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                <CheckBox x:Name="HasAssetAccessCheckBox" Content="Acesso Patrimônio" VerticalAlignment="Center" Margin="10,0,0,0"/>
                 <Button x:Name="AddUserButton" Content="Adicionar" Margin="10,0,0,0" Padding="10,5" Click="AddUserButton_Click"/>
             </StackPanel>
             <Button x:Name="RemoveUserButton" Content="Excluir Usuário" Margin="0,15,0,0" Padding="10,5" Click="RemoveUserButton_Click"/>

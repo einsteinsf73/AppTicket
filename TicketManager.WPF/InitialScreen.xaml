@@ -6,22 +6,22 @@
         xmlns:local="clr-namespace:TicketManager.WPF"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="Bem-vindo" Height="450" Width="800"
+        Title="Bem-vindo" Height="500" Width="900"
         WindowStartupLocation="CenterScreen">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+            <Button x:Name="SettingsButton" Content="Configurações" Padding="10,5" Click="SettingsButton_Click" Visibility="Collapsed"/>
+            <mah:DropDownButton Content="Estilo" Padding="10,5" Margin="5,0,0,0">
+                <mah:DropDownButton.Items>
+                    <MenuItem Header="Claro" Click="LightThemeMenuItem_Click"/>
+                    <MenuItem Header="Escuro" Click="DarkThemeMenuItem_Click"/>
+                </mah:DropDownButton.Items>
+            </mah:DropDownButton>
+        </StackPanel>
 
-        <Button x:Name="TicketButton" Content="Ticket" Grid.Column="0" Margin="20" Click="TicketButton_Click"/>
-        <Button x:Name="AssetControlButton" Content="Controle de Patrimônio" Grid.Column="1" Margin="20" Click="AssetControlButton_Click"/>
-
-        <mah:DropDownButton Content="Estilo" Padding="10,5" Margin="5,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Right" Grid.Column="1">
-            <mah:DropDownButton.Items>
-                <MenuItem Header="Claro" Click="LightThemeMenuItem_Click"/>
-                <MenuItem Header="Escuro" Click="DarkThemeMenuItem_Click"/>
-            </mah:DropDownButton.Items>
-        </mah:DropDownButton>
-    </Grid>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button x:Name="TicketButton" Content="Ticket" Margin="20" Width="200" Height="100" Click="TicketButton_Click"/>
+            <Button x:Name="AssetControlButton" Content="Controle de Patrimônio" Margin="20" Width="200" Height="100" Click="AssetControlButton_Click"/>
+        </StackPanel>
+    </DockPanel>
 </mah:MetroWindow>

@@ -19,6 +19,10 @@ namespace TicketManager.WPF.Models
 
         public int IsActive { get; set; } = 1; // Default to active
 
+        public int HasTicketAccess { get; set; } = 1; // Default to true
+
+        public int HasAssetAccess { get; set; } = 1; // Default to true
+
         [NotMapped]
         public bool IsAdminBool
         {
@@ -31,6 +35,20 @@ namespace TicketManager.WPF.Models
         {
             get { return IsActive == 0; }
             set { IsActive = value ? 0 : 1; }
+        }
+
+        [NotMapped]
+        public bool HasTicketAccessBool
+        {
+            get { return HasTicketAccess == 1; }
+            set { HasTicketAccess = value ? 1 : 0; }
+        }
+
+        [NotMapped]
+        public bool HasAssetAccessBool
+        {
+            get { return HasAssetAccess == 1; }
+            set { HasAssetAccess = value ? 1 : 0; }
         }
     }
 }

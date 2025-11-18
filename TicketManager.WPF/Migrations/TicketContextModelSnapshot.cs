@@ -67,7 +67,6 @@ namespace TicketManager.WPF.Migrations
                         .HasColumnName("LOCATION");
 
                     b.Property<string>("Manutencao")
-                        .IsRequired()
                         .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnName("MANUTENCAO");
 
@@ -171,7 +170,6 @@ namespace TicketManager.WPF.Migrations
                         .HasColumnName("LOCATION");
 
                     b.Property<string>("Manutencao")
-                        .IsRequired()
                         .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnName("MANUTENCAO");
 

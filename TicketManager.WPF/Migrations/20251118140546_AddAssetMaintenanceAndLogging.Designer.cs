@@ -12,7 +12,7 @@ using TicketManager.WPF.Data;
 namespace TicketManager.WPF.Migrations
 {
     [DbContext(typeof(TicketContext))]
-    [Migration("20251118135328_AddAssetMaintenanceAndLogging")]
+    [Migration("20251118140546_AddAssetMaintenanceAndLogging")]
     partial class AddAssetMaintenanceAndLogging
     {
         /// <inheritdoc />
@@ -70,7 +70,6 @@ namespace TicketManager.WPF.Migrations
                         .HasColumnName("LOCATION");
 
                     b.Property<string>("Manutencao")
-                        .IsRequired()
                         .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnName("MANUTENCAO");
 
@@ -174,7 +173,6 @@ namespace TicketManager.WPF.Migrations
                         .HasColumnName("LOCATION");
 
                     b.Property<string>("Manutencao")
-                        .IsRequired()
                         .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnName("MANUTENCAO");
 

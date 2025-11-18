@@ -30,7 +30,7 @@ namespace TicketManager.WPF.Models
         public string Department { get; set; }
         public string Employee { get; set; }
         public string Status { get; set; }
-        public string Manutencao { get; set; }
+        public string? Manutencao { get; set; }
         public DateTime? PrevisaoManutencao { get; set; }
         public string? Observations { get; set; }
         public DateTime ModifiedAt { get; set; }

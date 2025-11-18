@@ -83,6 +83,33 @@ namespace TicketManager.WPF
             {
                 if (MessageBox.Show($"Tem certeza que deseja excluir o patrimônio \"{selectedAsset.Item}\"?", "Confirmar Exclusão", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
                 {
+                    var assetLog = new AssetLog
+                    {
+                        OriginalAssetId = selectedAsset.Id,
+                        Item = selectedAsset.Item,
+                        Brand = selectedAsset.Brand,
+                        Model = selectedAsset.Model,
+                        SerialNumber = selectedAsset.SerialNumber,
+                        AssetNumber = selectedAsset.AssetNumber,
+                        Value = selectedAsset.Value,
+                        PurchaseDate = selectedAsset.PurchaseDate,
+                        Supplier = selectedAsset.Supplier,
+                        InvoiceNumber = selectedAsset.InvoiceNumber,
+                        Warranty = selectedAsset.Warranty,
+                        Location = selectedAsset.Location,
+                        Sector = selectedAsset.Sector,
+                        Department = selectedAsset.Department,
+                        Employee = selectedAsset.Employee,
+                        Status = selectedAsset.Status,
+                        Manutencao = selectedAsset.Manutencao,
+                        PrevisaoManutencao = selectedAsset.PrevisaoManutencao,
+                        Observations = selectedAsset.Observations,
+                        DeletedByHostname = System.Net.Dns.GetHostName(),
+                        DeletedByWindowsUser = Environment.UserName,
+                        DeletionTimestamp = DateTime.Now
+                    };
+
+                    _context.AssetLogs.Add(assetLog);
                     _context.Patrimonio.Remove(selectedAsset);
                     _context.SaveChanges();
                     LoadAssets();

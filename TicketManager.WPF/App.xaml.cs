@@ -16,6 +16,7 @@ namespace TicketManager.WPF
 
         public App()
         {
+            Console.WriteLine("App constructor started");
             System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("pt-BR");
             System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("pt-BR");
             FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(
@@ -28,20 +29,21 @@ namespace TicketManager.WPF
                         .Enrich.FromLogContext()
                         .Enrich.WithProperty("Application", "TicketManager")
                         .WriteTo.Console()
-                        .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 14)
                 )
                 .ConfigureServices((context, services) =>
                 {
                     services.AddDbContext<TicketContext>();
-                    services.AddSingleton<ITicketRepository, TicketRepository>();
+                    services.AddScoped<ITicketRepository, TicketRepository>();
                     services.AddTransient<MainViewModel>();
                     services.AddTransient<MainWindow>();
                 })
                 .Build();
+            Console.WriteLine("App constructor finished");
         }
 
         protected override async void OnStartup(StartupEventArgs e)
         {
+            Console.WriteLine("OnStartup started");
             await _host.StartAsync();
 
             using (var scope = _host.Services.CreateScope())
@@ -65,9 +67,9 @@ namespace TicketManager.WPF
                     {
                         if (authorizedUser.IsActive == 1)
                         {
-                            var mainWindow = new MainWindow(authorizedUser);
-                            mainWindow.Show();
-                        }
+                                                    Log.Information("Showing InitialScreen");
+                                                    var initialScreen = new InitialScreen(authorizedUser);
+                                                    initialScreen.Show();                        }
                         else
                         {
                             MessageBox.Show("Acesso Negado. Seu usuário está inativo. Contate um administrador.", "Usuário Inativo", MessageBoxButton.OK, MessageBoxImage.Warning);

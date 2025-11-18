@@ -1,0 +1,11 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <SolidColorBrush x:Key="Ticket.Status.Alta.Background" Color="LightCoral" />
+    <SolidColorBrush x:Key="Ticket.Status.Media.Background" Color="#F0E68C" />
+    <SolidColorBrush x:Key="Ticket.Status.Baixa.Background" Color="LightGreen" />
+    <SolidColorBrush x:Key="Ticket.Status.Fechado.Background" Color="LightBlue" />
+    <SolidColorBrush x:Key="Ticket.Status.Resolvido.Background" Color="LightBlue" />
+    <SolidColorBrush x:Key="Ticket.Status.Media.Foreground" Color="DarkOliveGreen" />
+
+</ResourceDictionary>

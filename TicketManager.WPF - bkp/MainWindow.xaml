@@ -6,14 +6,16 @@
         xmlns:local="clr-namespace:TicketManager.WPF"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="Ticket-TI" Height="540" Width="1296">
+        Title="Ticket-TI" Height="540" Width="960">
+    <mah:MetroWindow.Resources>
 
+    </mah:MetroWindow.Resources>
     <DockPanel Margin="10">
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
             <Button x:Name="NewTicketButton" Content="Novo Ticket" Margin="0,0,5,0" Padding="10,5" Click="NewTicketButton_Click"/>
-            <Button x:Name="ViewTicketButton" Content="Visualizar" Margin="0,0,5,0" Padding="10,5" IsEnabled="False" Click="ViewTicketButton_Click"/>
-            <Button x:Name="EditTicketButton" Content="Editar Ticket" Margin="0,0,5,0" Padding="10,5" IsEnabled="False" Click="EditTicketButton_Click"/>
-            <Button x:Name="ReopenTicketButton" Content="Reabrir Ticket" Margin="0,0,5,0" Padding="10,5" IsEnabled="False" Click="ReopenTicketButton_Click"/>
+            <Button x:Name="ViewTicketButton" Content="Visualizar" Margin="0,0,5,0" Padding="10,5" Click="ViewTicketButton_Click" IsEnabled="False"/>
+            <Button x:Name="EditTicketButton" Content="Editar Ticket" Margin="0,0,5,0" Padding="10,5" Click="EditTicketButton_Click" IsEnabled="False"/>
+            <Button x:Name="ReopenTicketButton" Content="Reabrir Ticket" Margin="0,0,5,0" Padding="10,5" Click="ReopenTicketButton_Click" IsEnabled="False"/>
             <Button x:Name="DeleteTicketButton" Content="Excluir Ticket" Padding="10,5" Click="DeleteTicketButton_Click"/>
 
             <Separator Margin="10,0"/>
@@ -22,7 +24,6 @@
 
             <Separator Margin="10,0"/>
 
-            <Button x:Name="HomeButton" Content="Home" Padding="10,5" Click="HomeButton_Click"/>
             <Button x:Name="SettingsButton" Content="Configurações" Padding="10,5" Click="SettingsButton_Click"/>
             <mah:DropDownButton Content="Estilo" Padding="10,5" Margin="5,0,0,0">
                 <mah:DropDownButton.Items>
@@ -44,17 +45,14 @@
             <Label Content="Prioridade:" VerticalAlignment="Center" Margin="10,0,5,0"/>
             <ComboBox Name="PriorityFilterComboBox" Width="100" VerticalAlignment="Center"/>
             <Label Content="De:" VerticalAlignment="Center" Margin="10,0,5,0"/>
-            <DatePicker Name="StartDatePicker" Width="120" VerticalAlignment="Center" PreviewKeyDown="DatePicker_PreviewKeyDown" Language="pt-BR" SelectedDateFormat="Short"/>
+            <DatePicker Name="StartDatePicker" Width="120" VerticalAlignment="Center" PreviewKeyDown="DatePicker_PreviewKeyDown"/>
             <Label Content="Até:" VerticalAlignment="Center" Margin="10,0,5,0"/>
-            <DatePicker Name="EndDatePicker" Width="120" VerticalAlignment="Center" PreviewKeyDown="DatePicker_PreviewKeyDown" Language="pt-BR" SelectedDateFormat="Short"/>
+            <DatePicker Name="EndDatePicker" Width="120" VerticalAlignment="Center" PreviewKeyDown="DatePicker_PreviewKeyDown"/>
             <Button Name="FilterButton" Content="Filtrar" Margin="10,0,5,0" Padding="10,2" Click="FilterButton_Click"/>
             <Button Name="ClearFilterButton" Content="Limpar" Padding="10,2" Click="ClearFilterButton_Click"/>
-            <Button x:Name="ColumnSettingsButton" Margin="10,0,0,0" Padding="5" Click="ColumnSettingsButton_Click">
-                <Path Data="M0,1.5 L18,1.5 M0,7.5 L18,7.5 M0,13.5 L18,13.5" Stroke="Black" StrokeThickness="2"/>
-            </Button>
         </StackPanel>
 
-        <DataGrid Name="TicketsGrid" AutoGenerateColumns="False" IsReadOnly="True" SelectionChanged="TicketsGrid_SelectionChanged" MouseDoubleClick="TicketsGrid_MouseDoubleClick" GridLinesVisibility="None">
+<DataGrid Name="TicketsGrid" AutoGenerateColumns="False" IsReadOnly="True" SelectionChanged="TicketsGrid_SelectionChanged" MouseDoubleClick="TicketsGrid_MouseDoubleClick" GridLinesVisibility="None">
             <DataGrid.RowStyle>
     <Style TargetType="DataGridRow">
         <Setter Property="BorderThickness" Value="0,0,0,1"/>
@@ -67,7 +65,6 @@
                     <Condition Binding="{Binding Priority}" Value="Alta"/>
                 </MultiDataTrigger.Conditions>
                 <Setter Property="Background" Value="{DynamicResource Ticket.Status.Alta.Background}"/>
-                <Setter Property="Foreground" Value="{DynamicResource Ticket.Status.Alta.Foreground}"/>
             </MultiDataTrigger>
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
@@ -83,7 +80,6 @@
                     <Condition Binding="{Binding Priority}" Value="Baixa"/>
                 </MultiDataTrigger.Conditions>
                 <Setter Property="Background" Value="{DynamicResource Ticket.Status.Baixa.Background}"/>
-                <Setter Property="Foreground" Value="{DynamicResource Ticket.Status.Baixa.Foreground}"/>
             </MultiDataTrigger>
             
             <!-- Tickets Em Andamento (usaremos a mesma cor da prioridade) -->
@@ -93,7 +89,6 @@
                     <Condition Binding="{Binding Priority}" Value="Alta"/>
                 </MultiDataTrigger.Conditions>
                 <Setter Property="Background" Value="{DynamicResource Ticket.Status.Alta.Background}"/>
-                <Setter Property="Foreground" Value="{DynamicResource Ticket.Status.Alta.Foreground}"/>
             </MultiDataTrigger>
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
@@ -109,7 +104,6 @@
                     <Condition Binding="{Binding Priority}" Value="Baixa"/>
                 </MultiDataTrigger.Conditions>
                 <Setter Property="Background" Value="{DynamicResource Ticket.Status.Baixa.Background}"/>
-                <Setter Property="Foreground" Value="{DynamicResource Ticket.Status.Baixa.Foreground}"/>
             </MultiDataTrigger>
 
             <!-- Tickets Fechados e Resolvidos -->

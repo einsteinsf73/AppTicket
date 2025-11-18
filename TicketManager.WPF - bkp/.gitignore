@@ -1,0 +1,12 @@
+# Build results
+[Bb]in/
+[Oo]bj/
+publish/
+
+# User-specific files
+*.user
+*.suo
+Thumbs.db
+
+# Misc
+build rebuild.txt

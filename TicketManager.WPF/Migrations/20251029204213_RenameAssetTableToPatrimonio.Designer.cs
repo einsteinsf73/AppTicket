@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
 using TicketManager.WPF.Data;
@@ -11,9 +12,11 @@ using TicketManager.WPF.Data;
 namespace TicketManager.WPF.Migrations
 {
     [DbContext(typeof(TicketContext))]
-    partial class TicketContextModelSnapshot : ModelSnapshot
+    [Migration("20251029204213_RenameAssetTableToPatrimonio")]
+    partial class RenameAssetTableToPatrimonio
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,23 +69,15 @@ namespace TicketManager.WPF.Migrations
                         .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnName("LOCATION");
 
-                    b.Property<string>("Manutencao")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("MANUTENCAO");
-
                     b.Property<string>("Model")
                         .IsRequired()
                         .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnName("MODEL");
 
                     b.Property<string>("Observations")
+                        .IsRequired()
                         .HasColumnType("NVARCHAR2(2000)")
                         .HasColumnName("OBSERVATIONS");
-
-                    b.Property<DateTime?>("PrevisaoManutencao")
-                        .HasColumnType("TIMESTAMP(7)")
-                        .HasColumnName("PREVISAO_MANUTENCAO");
 
                     b.Property<DateTime>("PurchaseDate")
                         .HasColumnType("TIMESTAMP(7)")
@@ -120,239 +115,6 @@ namespace TicketManager.WPF.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PATRIMONIO", (string)null);
-                });
-
-            modelBuilder.Entity("TicketManager.WPF.Models.AssetHistory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)")
-                        .HasColumnName("ID");
-
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AssetId")
-                        .HasColumnType("NUMBER(10)")
-                        .HasColumnName("ASSET_ID");
-
-                    b.Property<string>("AssetNumber")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("ASSET_NUMBER");
-
-                    b.Property<string>("Brand")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("BRAND");
-
-                    b.Property<string>("Department")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("DEPARTMENT");
-
-                    b.Property<string>("Employee")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("EMPLOYEE");
-
-                    b.Property<string>("InvoiceNumber")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("INVOICE_NUMBER");
-
-                    b.Property<string>("Item")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("ITEM");
-
-                    b.Property<string>("Location")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("LOCATION");
-
-                    b.Property<string>("Manutencao")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("MANUTENCAO");
-
-                    b.Property<string>("Model")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("MODEL");
-
-                    b.Property<DateTime>("ModifiedAt")
-                        .HasColumnType("TIMESTAMP(7)")
-                        .HasColumnName("MODIFIED_AT");
-
-                    b.Property<string>("ModifiedBy")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("MODIFIED_BY");
-
-                    b.Property<string>("Observations")
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("OBSERVATIONS");
-
-                    b.Property<DateTime?>("PrevisaoManutencao")
-                        .HasColumnType("TIMESTAMP(7)")
-                        .HasColumnName("PREVISAO_MANUTENCAO");
-
-                    b.Property<DateTime>("PurchaseDate")
-                        .HasColumnType("TIMESTAMP(7)")
-                        .HasColumnName("PURCHASE_DATE");
-
-                    b.Property<string>("Sector")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("SECTOR");
-
-                    b.Property<string>("SerialNumber")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("SERIAL_NUMBER");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("STATUS");
-
-                    b.Property<string>("Supplier")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("SUPPLIER");
-
-                    b.Property<decimal>("Value")
-                        .HasColumnType("decimal(18, 2)")
-                        .HasColumnName("VALUE");
-
-                    b.Property<string>("Warranty")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("WARRANTY");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AssetId");
-
-                    b.ToTable("PATRIMONIO_HISTORICO", (string)null);
-                });
-
-            modelBuilder.Entity("TicketManager.WPF.Models.AssetLog", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)")
-                        .HasColumnName("ID");
-
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AssetNumber")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("ASSET_NUMBER");
-
-                    b.Property<string>("Brand")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("BRAND");
-
-                    b.Property<string>("DeletedByHostname")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("DELETED_BY_HOSTNAME");
-
-                    b.Property<string>("DeletedByWindowsUser")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("DELETED_BY_WINDOWS_USER");
-
-                    b.Property<DateTime>("DeletionTimestamp")
-                        .HasColumnType("TIMESTAMP(7)")
-                        .HasColumnName("DELETION_TIMESTAMP");
-
-                    b.Property<string>("Department")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("DEPARTMENT");
-
-                    b.Property<string>("Employee")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("EMPLOYEE");
-
-                    b.Property<string>("InvoiceNumber")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("INVOICE_NUMBER");
-
-                    b.Property<string>("Item")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("ITEM");
-
-                    b.Property<string>("Location")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("LOCATION");
-
-                    b.Property<string>("Manutencao")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("MANUTENCAO");
-
-                    b.Property<string>("Model")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("MODEL");
-
-                    b.Property<string>("Observations")
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("OBSERVATIONS");
-
-                    b.Property<int>("OriginalAssetId")
-                        .HasColumnType("NUMBER(10)")
-                        .HasColumnName("ORIGINAL_ASSET_ID");
-
-                    b.Property<DateTime?>("PrevisaoManutencao")
-                        .HasColumnType("TIMESTAMP(7)")
-                        .HasColumnName("PREVISAO_MANUTENCAO");
-
-                    b.Property<DateTime>("PurchaseDate")
-                        .HasColumnType("TIMESTAMP(7)")
-                        .HasColumnName("PURCHASE_DATE");
-
-                    b.Property<string>("Sector")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("SECTOR");
-
-                    b.Property<string>("SerialNumber")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("SERIAL_NUMBER");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("STATUS");
-
-                    b.Property<string>("Supplier")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("SUPPLIER");
-
-                    b.Property<decimal>("Value")
-                        .HasColumnType("decimal(18, 2)")
-                        .HasColumnName("VALUE");
-
-                    b.Property<string>("Warranty")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("WARRANTY");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PATRIMONIO_LOGS", (string)null);
                 });
 
             modelBuilder.Entity("TicketManager.WPF.Models.AuthorizedUser", b =>
@@ -545,17 +307,6 @@ namespace TicketManager.WPF.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TICKET_LOGS", (string)null);
-                });
-
-            modelBuilder.Entity("TicketManager.WPF.Models.AssetHistory", b =>
-                {
-                    b.HasOne("TicketManager.WPF.Models.Asset", "Asset")
-                        .WithMany()
-                        .HasForeignKey("AssetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Asset");
                 });
 
             modelBuilder.Entity("TicketManager.WPF.Models.ReopeningLog", b =>

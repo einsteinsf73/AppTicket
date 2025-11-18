@@ -5,26 +5,25 @@
 namespace TicketManager.WPF.Migrations
 {
     /// <inheritdoc />
-    public partial class AddRowVersionToTicket : Migration
+    public partial class AddIsAdminFlagAsInt : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<byte[]>(
-                name: "ROW_VERSION",
-                table: "TICKETS",
-                type: "RAW(8)",
-                rowVersion: true,
-                nullable: true,
-                defaultValue: new byte[0]);
+            migrationBuilder.AddColumn<int>(
+                name: "IsAdmin",
+                table: "AUTHORIZED_USERS",
+                type: "NUMBER(10)",
+                nullable: false,
+                defaultValue: 0);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "ROW_VERSION",
-                table: "TICKETS");
+                name: "IsAdmin",
+                table: "AUTHORIZED_USERS");
         }
     }
 }

@@ -150,5 +150,40 @@ namespace TicketManager.WPF
         {
             // I will implement this method after the user provides the CSV data.
         }
+
+        private void AssetsGrid_Sorting(object sender, System.Windows.Controls.DataGridSortingEventArgs e)
+        {
+            if (e.Column.SortMemberPath == "AssetNumber")
+            {
+                var dataGrid = (System.Windows.Controls.DataGrid)sender;
+                var items = dataGrid.ItemsSource.Cast<Asset>().ToList();
+                var direction = e.Column.SortDirection == System.ComponentModel.ListSortDirection.Ascending ?
+                                System.ComponentModel.ListSortDirection.Descending :
+                                System.ComponentModel.ListSortDirection.Ascending;
+
+                e.Column.SortDirection = direction;
+
+                Func<string, int> parseAssetNumber = (assetNumber) =>
+                {
+                    if (int.TryParse(assetNumber, out int result))
+                    {
+                        return result;
+                    }
+                    return int.MaxValue; // ou algum outro valor padrão para strings não numéricas
+                };
+
+                if (direction == System.ComponentModel.ListSortDirection.Ascending)
+                {
+                    items.Sort((a, b) => parseAssetNumber(a.AssetNumber).CompareTo(parseAssetNumber(b.AssetNumber)));
+                }
+                else
+                {
+                    items.Sort((a, b) => parseAssetNumber(b.AssetNumber).CompareTo(parseAssetNumber(a.AssetNumber)));
+                }
+
+                dataGrid.ItemsSource = items;
+                e.Handled = true;
+            }
+        }
     }
 }

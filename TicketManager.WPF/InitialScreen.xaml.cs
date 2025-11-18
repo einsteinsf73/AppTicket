@@ -19,6 +19,28 @@ namespace TicketManager.WPF
         {
             InitializeComponent();
             _user = user;
+
+            // Check for single-module access
+            bool hasOnlyTicketAccess = _user.HasTicketAccessBool && !_user.HasAssetAccessBool;
+            bool hasOnlyAssetAccess = !_user.HasTicketAccessBool && _user.HasAssetAccessBool;
+
+            if (hasOnlyTicketAccess)
+            {
+                var mainWindow = new MainWindow(_user);
+                mainWindow.Show();
+                this.Close();
+                return; // Stop further execution in this window
+            }
+
+            if (hasOnlyAssetAccess)
+            {
+                var assetControlWindow = new AssetControlWindow(_user);
+                assetControlWindow.Show();
+                this.Close();
+                return; // Stop further execution in this window
+            }
+
+            // Original logic for when the screen is shown
             LoadUserColumnSettings();
             ChangeTheme(_userColumnSettings.Theme);
 

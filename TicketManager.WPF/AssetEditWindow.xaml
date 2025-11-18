@@ -9,7 +9,8 @@
         Title="Editar Patrimônio" 
         SizeToContent="WidthAndHeight" 
         MaxWidth="800" 
-        MaxHeight="600">
+        MaxHeight="600"
+        KeyDown="MetroWindow_KeyDown">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
         <Grid Margin="10">
             <Grid.ColumnDefinitions>

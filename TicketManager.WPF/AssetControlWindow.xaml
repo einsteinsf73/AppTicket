@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:TicketManager.WPF"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="Controle de Patrimônio" Height="600" Width="1000">
+        Title="Controle de Patrimônio" Height="600" Width="1000"
+        KeyDown="MetroWindow_KeyDown">
     <DockPanel Margin="10">
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
             <Button x:Name="HomeButton" Style="{StaticResource MahApps.Styles.Button.Circle}" Content="🏠" Margin="5" Click="HomeButton_Click" ToolTip="Início"/>
@@ -16,7 +17,7 @@
             <Button x:Name="HistoryButton" Style="{StaticResource MahApps.Styles.Button.Circle}" Content="📜" Margin="5" Click="HistoryButton_Click" ToolTip="Histórico"/>
             <Button x:Name="ImportButton" Style="{StaticResource MahApps.Styles.Button.Circle}" Content="📥" Margin="5" Click="ImportButton_Click" ToolTip="Importar"/>
             
-            <TextBox x:Name="SearchTextBox" Width="300" Margin="10,5,5,5" mah:TextBoxHelper.Watermark="Pesquisar..."/>
+            <TextBox x:Name="SearchTextBox" Width="300" Margin="10,5,5,5" mah:TextBoxHelper.Watermark="Pesquisar..." KeyDown="SearchTextBox_KeyDown"/>
             <Button x:Name="FilterButton" Style="{StaticResource MahApps.Styles.Button.Circle}" Content="🔍" Margin="5" Click="FilterButton_Click" ToolTip="Filtrar"/>
         </StackPanel>
 

@@ -39,7 +39,10 @@ namespace TicketManager.WPF
                     (a.Sector != null && a.Sector.ToLower().Contains(lowerFilter)) ||
                     (a.Department != null && a.Department.ToLower().Contains(lowerFilter)) ||
                     (a.Employee != null && a.Employee.ToLower().Contains(lowerFilter)) ||
-                    (a.Status != null && a.Status.ToLower().Contains(lowerFilter)));
+                    (a.Status != null && a.Status.ToLower().Contains(lowerFilter)) ||
+                    (a.Observations != null && a.Observations.ToLower().Contains(lowerFilter)) ||
+                    (a.Manutencao != null && a.Manutencao.ToLower().Contains(lowerFilter)) ||
+                    (a.PrevisaoManutencao.HasValue && a.PrevisaoManutencao.Value.ToString("dd/MM/yyyy").Contains(lowerFilter)));
             }
 
             AssetsGrid.ItemsSource = query.ToList();
@@ -176,6 +179,22 @@ namespace TicketManager.WPF
         private void ProcessExcelFile(string filePath)
         {
             // I will implement this method after the user provides the CSV data.
+        }
+
+        private void MetroWindow_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.Escape)
+            {
+                this.Close();
+            }
+        }
+
+        private void SearchTextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.Enter)
+            {
+                LoadAssets(SearchTextBox.Text);
+            }
         }
 
         private void AssetsGrid_Sorting(object sender, System.Windows.Controls.DataGridSortingEventArgs e)

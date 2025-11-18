@@ -15,8 +15,7 @@ namespace TicketManager.WPF.Migrations
                 name: "MANUTENCAO",
                 table: "PATRIMONIO_HISTORICO",
                 type: "NVARCHAR2(2000)",
-                nullable: false,
-                defaultValue: "");
+                nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "PREVISAO_MANUTENCAO",
@@ -28,8 +27,7 @@ namespace TicketManager.WPF.Migrations
                 name: "MANUTENCAO",
                 table: "PATRIMONIO",
                 type: "NVARCHAR2(2000)",
-                nullable: false,
-                defaultValue: "");
+                nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "PREVISAO_MANUTENCAO",

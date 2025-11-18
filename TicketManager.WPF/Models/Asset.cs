@@ -20,7 +20,7 @@ namespace TicketManager.WPF.Models
         public string Department { get; set; } = string.Empty;
         public string Employee { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
-        public string Manutencao { get; set; } = string.Empty;
+        public string? Manutencao { get; set; } = string.Empty;
         public DateTime? PrevisaoManutencao { get; set; }
         public string? Observations { get; set; } = string.Empty;
     }

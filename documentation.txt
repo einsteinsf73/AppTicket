@@ -1,0 +1,127 @@
+# Documentação do Software: TicketManager.WPF
+
+## 1. Introdução
+
+O TicketManager.WPF é uma aplicação de desktop para Windows, desenvolvida em .NET 8 com WPF (Windows Presentation Foundation), projetada para gerenciar tickets de suporte de TI e controlar o patrimônio de hardware da empresa. A aplicação utiliza um banco de dados Oracle para persistência de dados.
+
+## 2. Guia do Usuário
+
+### 2.1. Acesso à Aplicação
+
+- A aplicação utiliza o nome de usuário do Windows para autenticação.
+- O acesso é restrito a usuários previamente cadastrados na tela de **Configurações**.
+- Se um usuário não autorizado tentar abrir a aplicação, o acesso será negado.
+- Se um usuário estiver marcado como "Inativo", o acesso também será negado.
+
+### 2.2. Tela Inicial
+
+Após a autenticação, a tela inicial é exibida, apresentando os módulos disponíveis:
+
+- **Ticket:** Abre a tela de gerenciamento de tickets.
+- **Controle de Patrimônio:** Abre a tela de gerenciamento de patrimônio.
+
+**Navegação Automática:** Se o usuário tiver acesso a apenas um dos módulos, a aplicação pulará a tela inicial e abrirá o módulo correspondente diretamente.
+
+**Botão de Configurações:** Um botão de "Configurações" é visível no canto superior direito apenas para usuários com perfil de **Administrador**.
+
+### 2.3. Módulo de Tickets
+
+Esta tela exibe uma grade com todos os tickets.
+
+**Funcionalidades:**
+- **Novo Ticket:** Abre uma janela para criar um novo ticket.
+- **Visualizar/Editar:** Um duplo-clique em um ticket (ou usando os botões) abre a janela de visualização ou edição, dependendo do status do ticket.
+- **Excluir:** Remove um ticket. A exclusão é registrada em uma tabela de log para auditoria.
+- **Reabrir:** Altera o status de um ticket "Fechado" ou "Resolvido" para "Aberto".
+- **Exportar para Excel:** Exporta a lista de tickets visível na grade para um arquivo `.xlsx`, incluindo a descrição e o histórico.
+- **Filtragem:** É possível filtrar a lista de tickets por status, prioridade e intervalo de datas.
+- **Configuração de Colunas:** Permite ao usuário escolher quais colunas exibir na grade e em que ordem.
+
+### 2.4. Módulo de Controle de Patrimônio
+
+Esta tela exibe uma grade com todos os ativos de patrimônio cadastrados.
+
+**Funcionalidades:**
+- **Adicionar/Editar:** Abre uma janela para cadastrar um novo ativo ou editar um existente.
+- **Excluir:** Remove um ativo. A exclusão é registrada em uma tabela de log (`PATRIMONIO_LOGS`) para auditoria, incluindo o usuário que realizou a exclusão.
+- **Histórico:** Exibe um histórico completo de todas as alterações feitas nos campos de um ativo selecionado.
+- **Importar:** (Funcionalidade futura) Botão para importação de dados.
+- **Pesquisa Global:** A caixa de pesquisa busca o termo digitado em **todos** os campos de texto do patrimônio. A pesquisa é iniciada ao clicar no botão de lupa ou ao pressionar `Enter`.
+- **Ordenação:** A coluna "Patrimônio" (código do ativo) agora ordena os valores numericamente de forma correta.
+- **Navegação por Teclado:** Pressionar a tecla `Esc` fecha as janelas de Patrimônio (principal, edição e histórico).
+
+**Novos Campos:**
+- **Manutenção:** Um campo de texto para anotações sobre manutenções realizadas.
+- **Previsão de Manutenção:** Um campo de data para agendar manutenções futuras.
+
+### 2.5. Tela de Configurações (Apenas Administradores)
+
+Acessível a partir da tela inicial, esta janela permite gerenciar os usuários autorizados a usar o sistema.
+
+**Funcionalidades:**
+- **Listar Usuários:** Exibe todos os usuários cadastrados.
+- **Adicionar Usuário:** Permite adicionar um novo usuário pelo seu nome de usuário do Windows.
+- **Remover Usuário:** Exclui um usuário da lista de autorizados.
+- **Gerenciar Permissões:** Para cada usuário, o administrador pode definir:
+    - **Inativo:** Bloqueia o acesso do usuário ao sistema.
+    - **Admin:** Concede permissões de administrador (como o acesso a esta tela).
+    - **Acesso Tickets:** Permite o acesso ao módulo de Tickets.
+    - **Acesso Patrimônio:** Permite o acesso ao módulo de Controle de Patrimônio.
+
+## 3. Guia Técnico e de Desenvolvimento
+
+### 3.1. Pré-requisitos
+
+- **.NET 8 SDK:** Necessário para compilar e executar o projeto.
+- **Acesso a um banco de dados Oracle:** A connection string deve ser configurada.
+
+### 3.2. Estrutura do Projeto
+
+- **`TicketManager.WPF/`**: Projeto principal da aplicação WPF.
+    - **`Data/`**: Contém o `TicketContext` (DbContext do Entity Framework) e implementações de repositório.
+    - **`Models/`**: Contém as classes de modelo que representam as tabelas do banco de dados (ex: `Ticket`, `Asset`, `AuthorizedUser`).
+    - **`Views/`**: As janelas da aplicação (arquivos `.xaml` e `.xaml.cs`).
+    - **`ViewModels/`**: Classes ViewModel para suportar o padrão MVVM.
+    - **`Migrations/`**: Contém os arquivos de migração do Entity Framework Core.
+    - **`appsettings.json`**: Arquivo de configuração, principalmente para a connection string do banco de dados.
+
+### 3.3. Banco de Dados e Migrações
+
+A aplicação usa **Entity Framework Core** para o acesso a dados. O esquema do banco de dados é gerenciado através de migrações.
+
+- **Para criar uma nova migração:**
+  Após modificar uma classe no diretório `Models/`, execute o seguinte comando no terminal, na raiz do projeto:
+  ```
+  dotnet ef migrations add NomeDaMigracao --project TicketManager.WPF/TicketManager.WPF.csproj
+  ```
+
+- **Para aplicar migrações ao banco de dados:**
+  Este comando atualizará o esquema do banco de dados para corresponder ao estado mais recente das migrações.
+  ```
+  dotnet ef database update --project TicketManager.WPF/TicketManager.WPF.csproj
+  ```
+
+### 3.4. Configuração
+
+A string de conexão com o banco de dados Oracle deve ser configurada no arquivo `appsettings.json`:
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "User Id=<seu_usuario>;Password=<sua_senha>;Data Source=<seu_datasource_oracle>"
+  }
+}
+```
+
+### 3.5. Compilando e Publicando a Aplicação
+
+- **Para compilar o projeto (modo Debug):**
+  ```
+  dotnet build TicketManager.sln
+  ```
+
+- **Para publicar uma versão de Release (executável único):**
+  O projeto inclui um script `publish.bat` que simplifica este processo. Execute-o a partir da raiz do projeto:
+  ```
+  .\publish.bat
+  ```
+  Isso gerará um executável self-contained na pasta `TicketManager.WPF/publish/`.

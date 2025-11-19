@@ -15,12 +15,16 @@ namespace TicketManager.WPF.Models
         [MaxLength(256)]
         public string WindowsUserName { get; set; } = string.Empty;
 
+        [Column("IS_ADMIN")]
         public int IsAdmin { get; set; }
 
+        [Column("IS_ACTIVE")]
         public int IsActive { get; set; } = 1; // Default to active
 
+        [Column("HAS_TICKET_ACCESS")]
         public int HasTicketAccess { get; set; } = 1; // Default to true
 
+        [Column("HAS_ASSET_ACCESS")]
         public int HasAssetAccess { get; set; } = 1; // Default to true
 
         [NotMapped]

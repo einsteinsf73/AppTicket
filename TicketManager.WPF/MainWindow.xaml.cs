@@ -113,7 +113,6 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
         CurrentUserTextBlock.Text = $"Usuário: {user.WindowsUserName}";
         InitializeFilters();
         LoadTickets();
-        SetButtonVisibility();
     }
     private void ApplyColumnSettings()
     {
@@ -574,11 +573,6 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
             ApplyColumnSettings();
             SaveUserColumnSettings();
         }
-    }
-
-    private void SetButtonVisibility()
-    {
-        SettingsButton.Visibility = _isAdmin ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void ChangeTheme(string theme)

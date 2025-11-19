@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Windows;
+using TicketManager.WPF.Data;
 using TicketManager.WPF.Models;
 
 namespace TicketManager.WPF

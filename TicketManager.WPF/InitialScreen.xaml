@@ -7,7 +7,8 @@
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
         Title="Bem-vindo" Height="500" Width="900"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        Loaded="InitialScreen_Loaded">
     <DockPanel>
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
             <Button x:Name="SettingsButton" Content="Configurações" Padding="10,5" Click="SettingsButton_Click" Visibility="Collapsed"/>

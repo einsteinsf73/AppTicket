@@ -1,61 +1,101 @@
-using ControlzEx.Theming;
 using System;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Windows;
 using TicketManager.WPF.Data;
 using TicketManager.WPF.Models;
+using TicketManager.WPF.Services; // Import the new service
 
 namespace TicketManager.WPF
 {
     public partial class InitialScreen : MahApps.Metro.Controls.MetroWindow
     {
-        private readonly AuthorizedUser _user;
-        private UserColumnSettings _userColumnSettings;
-        private string _columnSettingsFilePath;
+        private AuthorizedUser? _user;
         private SettingsWindow? _settingsWindow;
 
-        public InitialScreen(AuthorizedUser user)
+        public InitialScreen()
         {
             InitializeComponent();
-            _user = user;
+        }
 
-            // Check for single-module access
-            bool hasOnlyTicketAccess = _user.HasTicketAccessBool && !_user.HasAssetAccessBool;
-            bool hasOnlyAssetAccess = !_user.HasTicketAccessBool && _user.HasAssetAccessBool;
-
-            if (hasOnlyTicketAccess)
+        private void InitialScreen_Loaded(object sender, RoutedEventArgs e)
+        {
+            try
             {
-                var mainWindow = new MainWindow(_user);
-                mainWindow.Show();
-                this.Close();
-                return; // Stop further execution in this window
+                using (var context = new TicketContext())
+                {
+                    if (!context.AuthorizedUsers.Any())
+                    {
+                        var firstUser = new AuthorizedUser { WindowsUserName = Environment.UserName, IsAdminBool = true, IsActive = 1 };
+                        context.AuthorizedUsers.Add(firstUser);
+                        context.SaveChanges();
+                    }
+
+                    var currentWindowsUser = Environment.UserName;
+                    var authorizedUser = context.AuthorizedUsers.FirstOrDefault(u => u.WindowsUserName.ToUpper() == currentWindowsUser.ToUpper());
+
+                    if (authorizedUser != null)
+                    {
+                        if (authorizedUser.IsActive == 1)
+                        {
+                            _user = authorizedUser;
+
+                            // Load theme settings using the service
+                            var userSettings = ThemeManagerService.LoadUserColumnSettings();
+                            ThemeManagerService.ChangeTheme(userSettings.Theme);
+
+                            // Check for single-module access and navigate away if necessary
+                            bool hasOnlyTicketAccess = _user.HasTicketAccessBool && !_user.HasAssetAccessBool;
+                            bool hasOnlyAssetAccess = !_user.HasTicketAccessBool && _user.HasAssetAccessBool;
+
+                            if (hasOnlyTicketAccess)
+                            {
+                                var mainWindow = new MainWindow(_user);
+                                mainWindow.Show();
+                                Application.Current.Dispatcher.InvokeAsync(() => this.Close());
+                                return;
+                            }
+                            else if (hasOnlyAssetAccess)
+                            {
+                                var assetControlWindow = new AssetControlWindow(_user);
+                                assetControlWindow.Show();
+                                Application.Current.Dispatcher.InvokeAsync(() => this.Close());
+                                return;
+                            }
+
+                            // This logic runs if the screen is shown (user has access to multiple modules)
+                            TicketButton.IsEnabled = _user.HasTicketAccessBool;
+                            AssetControlButton.IsEnabled = _user.HasAssetAccessBool;
+
+                            if (_user.IsAdminBool)
+                            {
+                                SettingsButton.Visibility = Visibility.Visible;
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Acesso Negado. Seu usuário está inativo. Contate um administrador.", "Usuário Inativo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            this.Close();
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Acesso Negado. Você não tem permissão para usar esta aplicação.", "Erro de Autorização", MessageBoxButton.OK, MessageBoxImage.Error);
+                        this.Close();
+                    }
+                }
             }
-
-            if (hasOnlyAssetAccess)
+            catch (Exception ex)
             {
-                var assetControlWindow = new AssetControlWindow(_user);
-                assetControlWindow.Show();
+                var errorMessage = ex.InnerException?.Message ?? ex.Message;
+                MessageBox.Show("Ocorreu um erro crítico na inicialização ao tentar conectar ao banco de dados.\n\nDetalhes: " + errorMessage,
+                                "Erro de Conexão", MessageBoxButton.OK, MessageBoxImage.Error);
                 this.Close();
-                return; // Stop further execution in this window
-            }
-
-            // Original logic for when the screen is shown
-            LoadUserColumnSettings();
-            ChangeTheme(_userColumnSettings.Theme);
-
-            TicketButton.IsEnabled = _user.HasTicketAccessBool;
-            AssetControlButton.IsEnabled = _user.HasAssetAccessBool;
-
-            if (_user.IsAdminBool)
-            {
-                SettingsButton.Visibility = Visibility.Visible;
             }
         }
 
         private void TicketButton_Click(object sender, RoutedEventArgs e)
         {
+            if (_user == null) return;
             var mainWindow = new MainWindow(_user);
             mainWindow.Show();
             this.Close();
@@ -63,6 +103,7 @@ namespace TicketManager.WPF
 
         private void AssetControlButton_Click(object sender, RoutedEventArgs e)
         {
+            if (_user == null) return;
             var assetControlWindow = new AssetControlWindow(_user);
             assetControlWindow.Show();
             this.Close();
@@ -85,93 +126,12 @@ namespace TicketManager.WPF
 
         private void LightThemeMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            ChangeTheme("Light.Blue");
+            ThemeManagerService.ChangeTheme("Light.Blue");
         }
 
         private void DarkThemeMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            ChangeTheme("Dark.Blue");
-        }
-
-        private void LoadUserColumnSettings()
-        {
-            _columnSettingsFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "TicketManager", $"{Environment.UserName}_column_settings.json");
-
-            var defaultUserColumnSettings = UserColumnSettings.GetDefaultSettings();
-            UserColumnSettings? loadedUserColumnSettings = null;
-
-            if (File.Exists(_columnSettingsFilePath))
-            {
-                try
-                {
-                    var jsonString = File.ReadAllText(_columnSettingsFilePath);
-                    loadedUserColumnSettings = JsonSerializer.Deserialize<UserColumnSettings>(jsonString);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Erro ao carregar configurações de coluna: {ex.Message}", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-
-            _userColumnSettings = defaultUserColumnSettings;
-
-            if (loadedUserColumnSettings != null)
-            {
-                _userColumnSettings.Theme = loadedUserColumnSettings.Theme;
-            }
-        }
-
-        private void SaveUserColumnSettings()
-        {
-            try
-            {
-                _userColumnSettings.UserName = Environment.UserName;
-                _userColumnSettings.Theme = ThemeManager.Current.DetectTheme(Application.Current)?.Name ?? "Light.Blue";
-
-                var jsonString = JsonSerializer.Serialize(_userColumnSettings, new JsonSerializerOptions { WriteIndented = true });
-                Directory.CreateDirectory(Path.GetDirectoryName(_columnSettingsFilePath)!);
-                File.WriteAllText(_columnSettingsFilePath, jsonString);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erro ao salvar configurações de coluna: {ex.Message}", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void ChangeTheme(string theme)
-        {
-            ThemeManager.Current.ChangeTheme(Application.Current, theme);
-
-            var colorDictionary = Application.Current.Resources.MergedDictionaries
-                .FirstOrDefault(d => d.Source != null && (d.Source.OriginalString.EndsWith("LightColors.xaml") || d.Source.OriginalString.EndsWith("DarkColors.xaml")));
-
-            var index = -1;
-            if (colorDictionary != null)
-            {
-                index = Application.Current.Resources.MergedDictionaries.IndexOf(colorDictionary);
-                Application.Current.Resources.MergedDictionaries.Remove(colorDictionary);
-            }
-
-            var newColorDictionary = new ResourceDictionary();
-            if (theme.StartsWith("Dark"))
-            {
-                newColorDictionary.Source = new Uri("DarkColors.xaml", UriKind.Relative);
-            }
-            else
-            {
-                newColorDictionary.Source = new Uri("LightColors.xaml", UriKind.Relative);
-            }
-
-            if (index == -1)
-            {
-                Application.Current.Resources.MergedDictionaries.Add(newColorDictionary);
-            }
-            else
-            {
-                Application.Current.Resources.MergedDictionaries.Insert(index, newColorDictionary);
-            }
-
-            SaveUserColumnSettings();
+            ThemeManagerService.ChangeTheme("Dark.Blue");
         }
     }
 }

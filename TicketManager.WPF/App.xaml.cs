@@ -46,50 +46,9 @@ namespace TicketManager.WPF
             Console.WriteLine("OnStartup started");
             await _host.StartAsync();
 
-            using (var scope = _host.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-                try
-                {
-                    var context = services.GetRequiredService<TicketContext>();
-                    
-                    if (!context.AuthorizedUsers.Any())
-                    {
-                        var firstUser = new AuthorizedUser { WindowsUserName = Environment.UserName, IsAdminBool = true, IsActive = 1 };
-                        context.AuthorizedUsers.Add(firstUser);
-                        context.SaveChanges();
-                    }
-
-                    var currentWindowsUser = Environment.UserName;
-                    var authorizedUser = context.AuthorizedUsers.FirstOrDefault(u => u.WindowsUserName.ToUpper() == currentWindowsUser.ToUpper());
-
-                    if (authorizedUser != null)
-                    {
-                        if (authorizedUser.IsActive == 1)
-                        {
-                                                    Log.Information("Showing InitialScreen");
-                                                    var initialScreen = new InitialScreen(authorizedUser);
-                                                    initialScreen.Show();                        }
-                        else
-                        {
-                            MessageBox.Show("Acesso Negado. Seu usuário está inativo. Contate um administrador.", "Usuário Inativo", MessageBoxButton.OK, MessageBoxImage.Warning);
-                            Shutdown();
-                        }
-                    }
-                    else
-                    {
-                        MessageBox.Show("Acesso Negado. Você não tem permissão para usar esta aplicação.", "Erro de Autorização", MessageBoxButton.OK, MessageBoxImage.Error);
-                        Shutdown();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    var errorMessage = ex.InnerException?.Message ?? ex.Message;
-                    MessageBox.Show("Ocorreu um erro crítico na inicialização ao tentar conectar ao banco de dados.\n\nDetalhes: " + errorMessage,
-                                    "Erro de Conexão", MessageBoxButton.OK, MessageBoxImage.Error);
-                    Shutdown();
-                }
-            }
+            // The logic has been moved to InitialScreen.xaml.cs to ensure a window handle exists for message boxes.
+            var initialScreen = new InitialScreen();
+            initialScreen.Show();
 
             base.OnStartup(e);
         }

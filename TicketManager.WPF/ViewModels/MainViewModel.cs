@@ -11,7 +11,7 @@ namespace TicketManager.WPF.ViewModels
 
         public ObservableCollection<Ticket> Tickets { get; } = new ObservableCollection<Ticket>();
 
-        private Ticket _selectedTicket;
+        private Ticket _selectedTicket = new();
         public Ticket SelectedTicket
         {
             get => _selectedTicket;

@@ -21,8 +21,8 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
     private readonly TicketContext _context = new TicketContext();
     private readonly AuthorizedUser _user;
     private readonly bool _isAdmin;
-    private UserColumnSettings _userColumnSettings;
-    private string _columnSettingsFilePath;
+    private UserColumnSettings _userColumnSettings = new();
+    private string _columnSettingsFilePath = string.Empty;
 
     private TicketWindow? _ticketWindow;
     private ViewTicketWindow? _viewTicketWindow;
@@ -521,7 +521,7 @@ public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
 
     private void HomeButton_Click(object sender, RoutedEventArgs e)
     {
-        var initialScreen = new InitialScreen(_user);
+        var initialScreen = new InitialScreen();
         initialScreen.Show();
         this.Close();
     }

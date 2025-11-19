@@ -12,8 +12,8 @@ using TicketManager.WPF.Data;
 namespace TicketManager.WPF.Migrations
 {
     [DbContext(typeof(TicketContext))]
-    [Migration("20251119150333_AddUserAccessControlCorrected")]
-    partial class AddUserAccessControlCorrected
+    [Migration("20251119151347_AddUserAccessControl")]
+    partial class AddUserAccessControl
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

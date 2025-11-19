@@ -59,18 +59,10 @@ namespace TicketManager.WPF
         {
             if (UsersGrid.SelectedItem is AuthorizedUser selectedUser)
             {
-                // Impede a exclusão do próprio usuário se for o único na lista
-                if (_context.AuthorizedUsers.Count() <= 1 && selectedUser.WindowsUserName.Equals(System.Environment.UserName, System.StringComparison.OrdinalIgnoreCase))
+                // Impede a exclusão do próprio usuário
+                if (selectedUser.WindowsUserName.Equals(System.Environment.UserName, System.StringComparison.OrdinalIgnoreCase))
                 {
-                    MessageBox.Show("Você não pode remover a si mesmo se for o único usuário autorizado.", "Operação Inválida", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                // Verifica se o usuário possui tickets associados
-                var hasTickets = _context.Tickets.Any(t => t.CreatedByWindowsUser == selectedUser.WindowsUserName);
-                if (hasTickets)
-                {
-                    MessageBox.Show($"O usuário '{selectedUser.WindowsUserName}' não pode ser excluído pois possui tickets registrados em seu nome. Para impedir o acesso, você pode marcá-lo como 'Inativo'.", "Exclusão Não Permitida", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Você não pode remover seu próprio usuário.", "Operação Inválida", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -88,10 +80,43 @@ namespace TicketManager.WPF
             }
         }
 
-        private void UsersGrid_CellEditEnding(object sender, System.Windows.Controls.DataGridCellEditEndingEventArgs e)
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            // Salva as alterações no banco de dados sempre que uma célula é editada
-            _context.SaveChanges();
+            var currentWindowsUser = System.Environment.UserName;
+            var users = UsersGrid.ItemsSource as System.Collections.Generic.List<AuthorizedUser>;
+
+            if (users == null) return;
+
+            // Validação para impedir que o usuário logado remova seu próprio acesso
+            foreach (var user in users)
+            {
+                if (user.WindowsUserName.Equals(currentWindowsUser, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    if (!user.IsAdminBool)
+                    {
+                        MessageBox.Show("Você não pode remover suas próprias permissões de Administrador.", "Operação Inválida", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        LoadAuthorizedUsers(); // Recarrega para reverter a alteração visual
+                        return;
+                    }
+                    if (user.IsInactiveBool)
+                    {
+                        MessageBox.Show("Você não pode desativar seu próprio acesso.", "Operação Inválida", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        LoadAuthorizedUsers(); // Recarrega para reverter a alteração visual
+                        return;
+                    }
+                }
+            }
+
+            try
+            {
+                _context.SaveChanges();
+                MessageBox.Show("Alterações salvas com sucesso!", "Sucesso", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show($"Ocorreu um erro ao salvar as alterações: {ex.Message}", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+                LoadAuthorizedUsers(); // Recarrega em caso de erro para garantir consistência
+            }
         }
     }
 }

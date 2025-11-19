@@ -50,9 +50,19 @@ namespace TicketManager.WPF
         
         private void HomeButton_Click(object sender, RoutedEventArgs e)
         {
-            var initialScreen = new InitialScreen(_user);
+            var initialScreen = new InitialScreen();
             initialScreen.Show();
             this.Close();
+        }
+
+        private void LightThemeMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            Services.ThemeManagerService.ChangeTheme("Light.Blue");
+        }
+
+        private void DarkThemeMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            Services.ThemeManagerService.ChangeTheme("Dark.Blue");
         }
 
         private void FilterButton_Click(object sender, RoutedEventArgs e)

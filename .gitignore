@@ -28,5 +28,11 @@ appsettings.*.json
 # Other
 instrucoes_banco_de_dados.txt
 *.lnk
-"TicketManager.WPF - bkp/" 
+"TicketManager.WPF - bkp/"
 /publish
+
+# Arquivos a serem ignorados
+*.xlsx
+*.csv
+*.pfx
+certificate_password.txt
